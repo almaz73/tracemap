@@ -1,18 +1,21 @@
 <template>
-  <div class="menu" :class="{open: isMenu}">
-    <nuxt-link to="/">Главная</nuxt-link>
-    <nuxt-link to="/technologies">Технологии</nuxt-link>
+  <div class="menu" :class="{open: isMenu}" @click="closeWindow()">
+    <nuxt-link  to="/">Главная</nuxt-link>
+    <nuxt-link  @click="closeWindow()" to="/technologies">Технологии</nuxt-link>
   </div>
 </template>
 
 <script>
-  import Vuex from 'vuex';
-
   export default {
     name: "Menu",
     computed: {
       isMenu: function () {
         return this.$store.getters.isMenu
+      }
+    },
+    methods:{
+      closeWindow: function(){
+        this.$store.dispatch('getIsMenu', !this.$store.getters.isMenu)
       }
     }
   }

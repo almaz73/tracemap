@@ -3,7 +3,6 @@
     <Header/>
     <Menu/>
     <div>
-      <app-logo/>
       <h1 class="title">
         Tracemap
       </h1>
