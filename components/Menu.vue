@@ -1,7 +1,8 @@
 <template>
   <div class="menu" :class="{open: isMenu}" @click="closeWindow()">
-    <nuxt-link  to="/">Главная</nuxt-link>
-    <nuxt-link  @click="closeWindow()" to="/technologies">Технологии</nuxt-link>
+    <nuxt-link to="/">Главная</nuxt-link>
+    <nuxt-link to="/technologies">Технологии</nuxt-link>
+    <nuxt-link to="/map">Карта</nuxt-link>
   </div>
 </template>
 
@@ -13,8 +14,8 @@
         return this.$store.getters.isMenu
       }
     },
-    methods:{
-      closeWindow: function(){
+    methods: {
+      closeWindow: function () {
         this.$store.dispatch('getIsMenu', !this.$store.getters.isMenu)
       }
     }
@@ -32,6 +33,7 @@
     left: -300px;
     -webkit-transition: left 0.3s,
     transform 0.3s;
+    z-index: 10;
   }
 
   .menu.open {

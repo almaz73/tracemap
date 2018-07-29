@@ -1,28 +1,21 @@
 <template>
-  <section class="container">
-    <Header/>
-    <Menu/>
-    <div>
-      <h1 class="title">
-        Tracemap
-      </h1>
-      <div class="links">
-        <nuxt-link to="/example1">Map</nuxt-link>
-        <nuxt-link to="/technologies">Help</nuxt-link>
-      </div>
+  <div>
+    <Frame/>
+    <div class="links">
+    <h1>Главная страница</h1>
+      <nuxt-link to="/map"> Карта </nuxt-link>
+      <nuxt-link to="/technologies"> Технологии </nuxt-link>
     </div>
-  </section>
+  </div>
+
 </template>
 
 <script>
-  import Header from '../components/Header'
-  import Menu from '../components/Menu'
+  import Frame from '~/components/Frame.vue'
 
   export default {
-    name: "Index",
     components: {
-      Header,
-      Menu
+      Frame
     }
   }
 </script>

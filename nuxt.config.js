@@ -3,7 +3,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'tracemap',
+    title: 'examples',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -13,6 +13,9 @@ module.exports = {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  modules: [
+    ['nuxt-leaflet', {ssr: false}]
+  ],
   /*
   ** Customize the progress bar color
   */
@@ -34,8 +37,5 @@ module.exports = {
         })
       }
     }
-  },
-  router: {
-    middleware: 'delay'
   }
 }

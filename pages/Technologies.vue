@@ -1,7 +1,6 @@
 <template>
   <div>
-    <Header/>
-    <Menu/>
+    <Frame/>
     <div class="help">
       <h3>Выбранные технологии</h3>
       <ul>
@@ -21,14 +20,12 @@
 </template>
 
 <script>
-  import Header from '../components/Header'
-  import Menu from '../components/Menu'
+  import Frame from '../components/Frame'
 
   export default {
     name: "Technologies",
     components: {
-      Header,
-      Menu
+      Frame
     }
   }
 </script>
@@ -36,13 +33,5 @@
 <style scoped>
   .help {
     padding: 30px;
-  }
-
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-
-  .fade-enter, .fade-leave-to {
-    opacity: 0;
   }
 </style>
