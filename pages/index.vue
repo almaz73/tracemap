@@ -1,57 +1,48 @@
 <template>
   <section class="container">
+    <Header/>
+    <Menu/>
     <div>
       <app-logo/>
       <h1 class="title">
-        tracemap
+        Tracemap
       </h1>
-      <h2 class="subtitle">
-        Nuxt.js project
-      </h2>
       <div class="links">
-        <a href="/example1">Example1</a>
+        <nuxt-link to="/example1">Map</nuxt-link>
+        <nuxt-link to="/technologies">Help</nuxt-link>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-import AppLogo from '~/components/AppLogo.vue'
+  import Header from '../components/Header'
+  import Menu from '../components/Menu'
 
-export default {
-  components: {
-    AppLogo
+  export default {
+    name: "Index",
+    components: {
+      Header,
+      Menu
+    }
   }
-}
 </script>
 
 <style>
-.container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+  .links {
+    margin: 12px;
+  }
 
-.title {
-  font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* 1 */
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
+  .links a {
+    padding: 3px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 5px;
+    background: #dbe1ec;
+    text-decoration: none;
+  }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
-}
+  .links a:hover {
+    background: aliceblue;
+  }
 </style>
