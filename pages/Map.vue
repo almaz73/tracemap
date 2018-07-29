@@ -21,7 +21,7 @@
 <style>
   .map {
     position: absolute;
-    height: 100%;
+    height: calc(100vh - 50px);
     width: 100%;
     z-index: 1;
   }
