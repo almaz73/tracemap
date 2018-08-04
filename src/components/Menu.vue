@@ -3,6 +3,7 @@
     <router-link to="/">Главная</router-link>
     <router-link to="/technologies">Технологии</router-link>
     <router-link to="/map">Карта</router-link>
+    <router-link to="/admin">Админка</router-link>
   </div>
 </template>
 
