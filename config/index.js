@@ -49,7 +49,7 @@ module.exports = {
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: 'games/game/Tracemap/static',
+    assetsSubDirectory: 'games/game/Tracemap/static', //games/game/Tracemap/
     assetsPublicPath: '/',
 
     /**
