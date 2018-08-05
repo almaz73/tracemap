@@ -20,12 +20,15 @@ export default {
 </script>
 
 <style>
-  body{
+  @import "leaflet/dist/leaflet.css";
+
+  body {
     padding: 0;
     margin: 0;
   }
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  color: #2c3e50;
-}
+
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    color: #2c3e50;
+  }
 </style>
