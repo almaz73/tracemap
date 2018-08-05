@@ -17,7 +17,7 @@ export default {
   },
   methods: {
     closeWindow: function() {
-      this.$store.dispatch('getIsMenu', !this.$store.getters.isMenu);
+      this.$store.dispatch('setIsMenu', !this.$store.getters.isMenu);
     }
   }
 };

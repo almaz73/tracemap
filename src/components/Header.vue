@@ -9,7 +9,7 @@ export default {
   name: 'Header',
   methods: {
     openMenu: function() {
-      this.$store.dispatch('getIsMenu', !this.$store.getters.isMenu);
+      this.$store.dispatch('setIsMenu', !this.$store.getters.isMenu);
     }
   }
 };
