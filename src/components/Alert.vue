@@ -4,7 +4,7 @@
       <div class="draggable-head-x">_</div>
     </div>
     <div class="draggable-content" v-if="!isSmall">
-      <div class="draggable-elem" v-for="elem in alarms" :key="elem.id">{{elem.name}}
+      <div class="draggable-elem" v-for="elem in alarms" :key="elem.id">{{elem.id}}. {{elem.name}}
         <span class="draggable-elem-x" @click="deleteElem(elem)">x</span>
       </div>
     </div>
@@ -16,7 +16,6 @@ export default {
   name: 'Alert',
   data() {
     return {
-      isDraggable: false,
       isSmall: false
     };
   },
@@ -26,7 +25,51 @@ export default {
     }
   },
   created() {
-    this.isDraggable = document.getElementById('draggable');
+    this.moveAlarms = function() {
+      let me = this;
+      let elem = document.getElementById('draggable');
+
+      if (!elem) return;
+
+      elem.onmousedown = e => {
+        let coords = getCoords(elem);
+        let shiftX = e.pageX - coords.left;
+        let shiftY = e.pageY - coords.top;
+
+        if (e.target.className === 'draggable-head-x') { // уменьшение
+          if (!me.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
+          else if (coords.top > (window.innerHeight - 200)) elem.style.top = (window.innerHeight - 200) + 'px';
+          me.isSmall = !me.isSmall;
+        }
+
+        // список элементов, на которых перетаскивание отключается
+        if (['draggable-head-x', 'draggable-elem-x'].includes(e.target.className)) return e.stopPropagation();
+
+        moveAt(e);
+
+        function moveAt(e) {
+          elem.style.left = e.pageX - shiftX + 'px';
+          elem.style.top = e.pageY - shiftY + 'px';
+        }
+
+        document.onmousemove = e => moveAt(e);
+
+        elem.onmouseup = () => {
+          document.onmousemove = null;
+          elem.onmouseup = null;
+        };
+      };
+
+      elem.ondragstart = () => false;
+
+      function getCoords(elem) {
+        let box = elem.getBoundingClientRect();
+        return {
+          top: box.top + pageYOffset,
+          left: box.left + pageXOffset
+        };
+      }
+    };
   },
   methods: {
     deleteElem(elem) {
@@ -35,48 +78,10 @@ export default {
     }
   },
   mounted() {
-    let me = this;
-    let elem = document.getElementById('draggable');
-
-    elem.onmousedown = e => {
-      let coords = getCoords(elem);
-      let shiftX = e.pageX - coords.left;
-      let shiftY = e.pageY - coords.top;
-
-      if (e.target.className === 'draggable-head-x') { // уменьшение
-        if (!me.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
-        else if (coords.top > (window.innerHeight - 200)) elem.style.top = (window.innerHeight - 200) + 'px';
-        me.isSmall = !me.isSmall;
-      }
-
-      // список элементов, на которых перетаскивание отключается
-      if (['draggable-head-x', 'draggable-elem-x'].includes(e.target.className)) return e.stopPropagation();
-
-      if (!this.isDraggable) document.body.appendChild(elem);
-      moveAt(e);
-
-      function moveAt(e) {
-        elem.style.left = e.pageX - shiftX + 'px';
-        elem.style.top = e.pageY - shiftY + 'px';
-      }
-
-      document.onmousemove = e => moveAt(e);
-
-      elem.onmouseup = () => {
-        document.onmousemove = null;
-        elem.onmouseup = null;
-      };
-    };
-
-    elem.ondragstart = () => false;
-
-    function getCoords(elem) {
-      let box = elem.getBoundingClientRect();
-      return {
-        top: box.top + pageYOffset,
-        left: box.left + pageXOffset
-      };
-    }
+    this.moveAlarms();
+  },
+  updated() {
+    this.moveAlarms();
   }
 };
 </script>

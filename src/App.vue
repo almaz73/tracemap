@@ -1,12 +1,21 @@
 <template>
   <div id="app">
     <router-view/>
+    {{data}}
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  beforeCreate() {
+    this.$store.dispatch('getAlarms');
+  },
+  data({store}) {
+    return {
+      data: this.$store.state.alarms
+    };
+  }
 };
 </script>
 
