@@ -25,10 +25,10 @@ module.exports = {
     'generator-star-spacing': 'off',
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-
-    "semi": [2, "always"],
+    //"semi": [2, "always"],
     //"semi": [2, "never"], // по умолчанию не нужно ставить точу с запятой в конце
-    //"semi": 0,
-    "space-before-function-paren": ["error", "never"]
+    "semi": 0, // не важно есть точка с запоятой в конце или нет
+    "space-before-function-paren": ["error", "never"],
+    "quotes": 0, //отключаем проверку на двойные или одинарные ковычки
   }
 }

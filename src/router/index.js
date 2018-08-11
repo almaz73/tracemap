@@ -3,6 +3,7 @@ import Router from 'vue-router';
 
 import Index from '@/pages/Index.vue';
 import Map from '@/pages/Map.vue';
+import Map2 from '@/pages/Map2.vue';
 import Technologies from '@/pages/Technologies';
 import Admin from '@/pages/Admin';
 
@@ -19,6 +20,11 @@ export default new Router({
       path: '/map',
       name: 'Map',
       component: Map
+    },
+    {
+      path: '/map2',
+      name: 'Map2',
+      component: Map2
     },
     {
       path: '/technologies',
