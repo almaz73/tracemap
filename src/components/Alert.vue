@@ -12,78 +12,78 @@
 </template>
 
 <script>
-export default {
-  name: 'Alert',
-  data() {
-    return {
-      isSmall: false
-    };
-  },
-  computed: {
-    alarms: function() {
-      return this.$store.state.alarms;
-    }
-  },
-  created() {
-    this.moveAlarms = function() {
-      let me = this;
-      let elem = document.getElementById('draggable');
-
-      if (!elem) return;
-
-      elem.onmousedown = e => {
-        let coords = getCoords(elem);
-        let shiftX = e.pageX - coords.left;
-        let shiftY = e.pageY - coords.top;
-
-        if (e.target.className === 'draggable-head-x') { // уменьшение
-          if (!me.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
-          else if (coords.top > (window.innerHeight - 200)) elem.style.top = (window.innerHeight - 200) + 'px';
-          me.isSmall = !me.isSmall;
-        }
-
-        // список элементов, на которых перетаскивание отключается
-        if (['draggable-head-x', 'draggable-elem-x'].includes(e.target.className)) return e.stopPropagation();
-
-        moveAt(e);
-
-        function moveAt(e) {
-          elem.style.left = e.pageX - shiftX + 'px';
-          elem.style.top = e.pageY - shiftY + 'px';
-        }
-
-        document.onmousemove = e => moveAt(e);
-
-        elem.onmouseup = () => {
-          document.onmousemove = null;
-          elem.onmouseup = null;
-        };
+  export default {
+    name: 'Alert',
+    data() {
+      return {
+        isSmall: false
       };
-
-      elem.ondragstart = () => false;
-
-      function getCoords(elem) {
-        let box = elem.getBoundingClientRect();
-        return {
-          top: box.top + pageYOffset,
-          left: box.left + pageXOffset
-        };
+    },
+    computed: {
+      alarms: function() {
+        return this.$store.state.alarms;
       }
-    };
-  },
-  methods: {
-    deleteElem(elem) {
-      let alarms = this.alarms.filter(el => el.id !== elem.id);
-      this.$store.dispatch('setAlarms', alarms);
+    },
+    created() {
+      this.moveAlarms = function() {
+        let me = this;
+        let elem = document.getElementById('draggable');
+
+        if (!elem) return;
+
+        elem.onmousedown = e => {
+          let coords = getCoords(elem);
+          let shiftX = e.pageX - coords.left;
+          let shiftY = e.pageY - coords.top;
+
+          if (e.target.className === 'draggable-head-x') { // уменьшение
+            if (!me.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
+            else if (coords.top > (window.innerHeight - 200)) elem.style.top = (window.innerHeight - 200) + 'px';
+            me.isSmall = !me.isSmall;
+          }
+
+          // список элементов, на которых перетаскивание отключается
+          if (['draggable-head-x', 'draggable-elem-x'].includes(e.target.className)) return e.stopPropagation();
+
+          moveAt(e);
+
+          function moveAt(e) {
+            elem.style.left = e.pageX - shiftX + 'px';
+            elem.style.top = e.pageY - shiftY + 'px';
+          }
+
+          document.onmousemove = e => moveAt(e);
+
+          elem.onmouseup = () => {
+            document.onmousemove = null;
+            elem.onmouseup = null;
+          };
+        };
+
+        elem.ondragstart = () => false;
+
+        function getCoords(elem) {
+          let box = elem.getBoundingClientRect();
+          return {
+            top: box.top + pageYOffset,
+            left: box.left + pageXOffset
+          };
+        }
+      };
+    },
+    methods: {
+      deleteElem(elem) {
+        let alarms = this.alarms.filter(el => el.id !== elem.id);
+        this.$store.dispatch('setAlarms', alarms);
+      }
+    },
+    mounted() {
+      this.moveAlarms();
+    },
+    updated() {
+      this.moveAlarms();
     }
-  },
-  mounted() {
-    this.moveAlarms();
-  },
-  updated() {
-    this.moveAlarms();
-  }
-};
+  };
 </script>
 
 <style>
@@ -123,10 +123,12 @@ export default {
 
     overflow-y: auto;
   }
-  .draggable-elem{
+
+  .draggable-elem {
     padding: 5px 10px 2px 10px;
   }
-  .draggable-elem:hover{
+
+  .draggable-elem:hover {
     background: #cccccc;
   }
 

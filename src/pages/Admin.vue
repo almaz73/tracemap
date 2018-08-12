@@ -1,11 +1,11 @@
 <template>
-    <div>
-      Админка
-    </div>
+  <div>
+    Админка
+  </div>
 </template>
 
 <script>
-export default {
-  name: 'Admin'
-};
+  export default {
+    name: 'Admin'
+  };
 </script>

@@ -15,14 +15,14 @@
 </template>
 
 <script>
-import MapComponent from '@/components/MapComponent';
-import Frame from '@/components/Frame';
+  import MapComponent from '@/components/MapComponent';
+  import Frame from '@/components/Frame';
 
-export default {
-  name: 'Map',
-  components: {
-    Frame,
-    MapComponent
-  }
-};
+  export default {
+    name: 'Map',
+    components: {
+      Frame,
+      MapComponent
+    }
+  };
 </script>

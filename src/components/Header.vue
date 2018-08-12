@@ -5,14 +5,14 @@
 </template>
 
 <script>
-export default {
-  name: 'Header',
-  methods: {
-    openMenu: function() {
-      this.$store.dispatch('setIsMenu', !this.$store.getters.isMenu);
+  export default {
+    name: 'Header',
+    methods: {
+      openMenu: function() {
+        this.$store.dispatch('setIsMenu', !this.$store.getters.isMenu);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
@@ -28,7 +28,7 @@ export default {
   .head a {
     cursor: pointer;
     padding: 10px;
-    margin-left:10px;
+    margin-left: 10px;
   }
 
   .head a:hover {

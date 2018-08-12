@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import Frame from '@/components/Frame';
+  import Frame from '@/components/Frame';
 
-export default {
-  name: 'Index',
-  components: {
-    Frame
-  }
-};
+  export default {
+    name: 'Index',
+    components: {
+      Frame
+    }
+  };
 </script>
 
 <style scoped>

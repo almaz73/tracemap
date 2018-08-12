@@ -2,8 +2,12 @@
   <div class="menu" :class="{open: isMenu}" @click="closeWindow()">
     <router-link to="/">Главная</router-link>
     <router-link to="/technologies">Технологии</router-link>
-    <div class="inline"><router-link to="/map">Карта</router-link>   <router-link to="/map2">Карта2</router-link>    </div>
+    <div class="inline">
+      <router-link to="/map">Карта</router-link>
+      <router-link to="/map2">Карта2</router-link>
+    </div>
     <router-link to="/admin">Админка</router-link>
+    <router-link to="/tasks">Задачи</router-link>
   </div>
 </template>
 

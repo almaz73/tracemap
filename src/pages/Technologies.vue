@@ -19,14 +19,14 @@
 </template>
 
 <script>
-import Frame from '@/components/Frame';
+  import Frame from '@/components/Frame';
 
-export default {
-  name: 'Technologies',
-  components: {
-    Frame
-  }
-};
+  export default {
+    name: 'Technologies',
+    components: {
+      Frame
+    }
+  };
 </script>
 
 <style scoped>

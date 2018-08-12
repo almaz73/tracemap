@@ -6,6 +6,7 @@ import Map from '@/pages/Map.vue';
 import Map2 from '@/pages/Map2.vue';
 import Technologies from '@/pages/Technologies';
 import Admin from '@/pages/Admin';
+import Tasks from '@/pages/Tasks';
 
 Vue.use(Router);
 
@@ -35,6 +36,11 @@ export default new Router({
       path: '/admin',
       name: 'Admin',
       component: Admin
+    },
+    {
+      path: '/tasks',
+      name: 'Tasks',
+      component: Tasks
     }
   ]
 });
