@@ -6,17 +6,17 @@
 </template>
 
 <script>
-export default {
-  name: 'App',
-  beforeCreate() {
-    this.$store.dispatch('getAlarms');
-  },
-  data({store}) {
-    return {
-      data: this.$store.state.alarms
-    };
-  }
-};
+  export default {
+    name: 'App',
+    beforeCreate() {
+      this.$store.dispatch('getAlarms');
+    },
+    data({store}) {
+      return {
+        data: this.$store.state.alarms
+      };
+    }
+  };
 </script>
 
 <style>
