@@ -1,5 +1,5 @@
 <template>
-  <div id="draggable" v-if="alarms.length">
+  <div class="draggable" v-if="alarms.length" ref="me">
     <div class="draggable-head">Оповещения
       <div class="draggable-head-x">_</div>
     </div>
@@ -26,21 +26,16 @@
     },
     created() {
       this.moveAlarms = function() {
-        let me = this;
-        let elem = document.getElementById('draggable');
+        let elem = this.$refs.me;
 
         if (!elem) return;
 
         elem.onmousedown = e => {
-          let coords = getCoords(elem);
+          let coords = this.getCoords(elem);
           let shiftX = e.pageX - coords.left;
           let shiftY = e.pageY - coords.top;
 
-          if (e.target.className === 'draggable-head-x') { // уменьшение
-            if (!me.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
-            else if (coords.top > (window.innerHeight - 200)) elem.style.top = (window.innerHeight - 200) + 'px';
-            me.isSmall = !me.isSmall;
-          }
+          if (e.target.className === 'draggable-head-x') this.toCling();
 
           // список элементов, на которых перетаскивание отключается
           if (['draggable-head-x', 'draggable-elem-x'].includes(e.target.className)) return e.stopPropagation();
@@ -61,24 +56,36 @@
         };
 
         elem.ondragstart = () => false;
-
-        function getCoords(elem) {
-          let box = elem.getBoundingClientRect();
-          return {
-            top: box.top + pageYOffset,
-            left: box.left + pageXOffset
-          };
-        }
       };
     },
     methods: {
       deleteElem(elem) {
         let alarms = this.alarms.filter(el => el.id !== elem.id);
         this.$store.dispatch('setAlarms', alarms);
+      },
+      toCling() { // прилипание/отображение
+        let elem = this.$refs.me;
+        let coords = this.getCoords(elem);
+        if (!this.isSmall) elem.style.top = (window.innerHeight - 30) + 'px';
+        else if (coords.top > (window.innerHeight - 275)) elem.style.top = (window.innerHeight - 275) + 'px';
+        this.isSmall = !this.isSmall;
+      },
+      getCoords(elem) {
+        let box = elem.getBoundingClientRect();
+        return {
+          top: box.top + pageYOffset,
+          left: box.left + pageXOffset
+        };
       }
     },
     mounted() {
-      this.moveAlarms();
+      let waitPanel = () => {
+        if (this.$refs.me) {
+          this.$refs.me.style.opacity = 1;
+          this.toCling();
+        } else setTimeout(() => waitPanel(), 1);
+      };
+      waitPanel();
     },
     updated() {
       this.moveAlarms();
@@ -91,11 +98,11 @@
     --radius: 8px;
   }
 
-  .draggable-head, #draggable {
+  .draggable-head, .draggable {
     border-radius: var(--radius) var(--radius) 0 0;
   }
 
-  #draggable {
+  .draggable {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
     width: 400px;
     height: 30px;
@@ -104,6 +111,8 @@
     top: 300px;
     left: 300px;
     z-index: 3;
+    opacity: 0;
+    transition: opacity 0.2s ease-out 0.5s;
   }
 
   .draggable-head {
@@ -117,8 +126,7 @@
   }
 
   .draggable-content {
-    min-height: 150px;
-    max-height: 150px;
+    height: 240px;
     background: #c3c3c3;
 
     overflow-y: auto;
