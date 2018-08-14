@@ -28,7 +28,7 @@ module.exports = {
     //"semi": [2, "always"],
     //"semi": [2, "never"], // по умолчанию не нужно ставить точу с запятой в конце
     "semi": 0, // не важно есть точка с запоятой в конце или нет
-    "space-before-function-paren": ["error", "never"],
+    "space-before-function-paren": 0,
     "quotes": 0, //отключаем проверку на двойные или одинарные ковычки
     "indent": 0, // отключаем требованние отступа в коде
   }

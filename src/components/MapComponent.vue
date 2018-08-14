@@ -10,6 +10,7 @@
         <l-marker v-if="position" :lat-lng="position" :draggable="false">
           <l-popup :content="text"></l-popup>
         </l-marker>
+        <l-geo-json v-if="geo" :geojson="geo.geojson" :options="geo.options"></l-geo-json>
       </l-map>
     </div>
   </div>
@@ -18,11 +19,11 @@
 <script>
 
   import L from 'leaflet';
-  import {LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup} from 'vue2-leaflet';
+  import {LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup, LGeoJson} from 'vue2-leaflet';
 
   export default {
     name: 'MapComponent',
-    components: {L, LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup},
+    components: {L, LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup, LGeoJson },
     props: {
       zoom: {
         default: 11,
@@ -46,6 +47,15 @@
           return [55.8050812, 49.1124942]
         },
         type: Array
+      },
+      geo: {
+        type: Object
+        // default() {
+        //   return {
+        //     center: L.latLng(55.8050812, 49.1124942),
+        //     radius: 4500
+        //   }
+        // }
       },
       circle: {
         type: Object
