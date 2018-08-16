@@ -23,7 +23,7 @@
 
   export default {
     name: 'MapComponent',
-    components: {L, LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup, LGeoJson },
+    components: {L, LMap, LTileLayer, LCircle, LRectangle, LPolygon, LPolyline, LMarker, LPopup, LGeoJson},
     props: {
       zoom: {
         default: 11,
