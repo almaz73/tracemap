@@ -1,19 +1,28 @@
 <template>
   <div>
     <Frame/>
-    <MapComponentEdit />
+    <MapComponentEdit/>
 
-    <cPanel />
+    <cTool />
+    <cLayers v-if="selected == 'layers'"/>
   </div>
 </template>
 
 <script>
   import Frame from "../../components/Frame";
   import MapComponentEdit from "../../components/MapComponentEdit";
-  import cPanel from "../edit/cPanel";
+  import cTool from "../edit/cTool";
+  import cLayers from "../edit/cLayers";
+
   export default {
     name: "Editor",
-    components: {MapComponentEdit, Frame, cPanel}
+    components: {MapComponentEdit, Frame, cTool, cLayers},
+    computed: {
+      selected: function () {
+        console.log("...... this.$store.state.showLayer=", this.$store.state.showLayer)
+        return this.$store.state.showLayer
+      }
+    }
   }
 </script>
 

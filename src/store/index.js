@@ -5,7 +5,8 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       isMenu: false,
-      alarms: []
+      alarms: [],
+      showLayer: '2323'
     },
     getters: {
       isMenu(state) {
@@ -13,6 +14,9 @@ const createStore = () => {
       },
       alarms(state) {
         return state.alarms;
+      },
+      showLayer(state) {
+        return state.showLayer;
       }
     },
     mutations: {
@@ -21,6 +25,9 @@ const createStore = () => {
       },
       setAlarms(state, alarms) {
         state.alarms = alarms;
+      },
+      setShowLayer(state, layerName) {
+        state.showLayer = layerName
       }
     },
     actions: {
@@ -29,6 +36,9 @@ const createStore = () => {
       },
       setAlarms(context, payload) {
         context.commit('setAlarms', payload);
+      },
+      setShowLayer(context, layerName) {
+        context.commit('setShowLayer', layerName)
       },
       async getAlarms(content) {
         const req = await axios.get('https://jsonplaceholder.typicode.com/users');
