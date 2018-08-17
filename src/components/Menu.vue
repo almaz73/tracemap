@@ -9,6 +9,7 @@
     </div>
     <router-link to="/admin">Админка</router-link>
     <router-link to="/tasks">Задачи</router-link>
+    <router-link to="/edit">Editor</router-link>
   </div>
 </template>
 
@@ -42,7 +43,7 @@ export default {
     left: -300px;
     -webkit-transition: left 0.3s,
     transform 0.3s;
-    z-index: 10;
+    z-index: 100;
   }
 
   .menu.open {

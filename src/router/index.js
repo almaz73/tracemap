@@ -8,6 +8,7 @@ import Map3 from '@/pages/Map3.vue';
 import Technologies from '@/pages/Technologies';
 import Admin from '@/pages/Admin';
 import Tasks from '@/pages/Tasks';
+import Editor from '@/pages/edit/Editor';
 
 Vue.use(Router);
 
@@ -47,6 +48,11 @@ export default new Router({
       path: '/tasks',
       name: 'Tasks',
       component: Tasks
+    },
+    {
+      path: '/edit',
+      name: 'Editor',
+      component: Editor
     }
   ]
 });
