@@ -19,7 +19,6 @@
     components: {MapComponentEdit, Frame, cTool, cLayers},
     computed: {
       selected: function () {
-        console.log("...... this.$store.state.showLayer=", this.$store.state.showLayer)
         return this.$store.state.showLayer
       }
     }
