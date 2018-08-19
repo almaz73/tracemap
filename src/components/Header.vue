@@ -1,15 +1,29 @@
 <template>
   <div class="head">
     <a @click="openMenu()">Меню</a>
+    <a @click="saveState()" title="сохранить состояние ">&#11147;</a>
   </div>
 </template>
 
 <script>
+  import localforage from 'localforage';
+
   export default {
     name: 'Header',
     methods: {
       openMenu: function() {
         this.$store.dispatch('setIsMenu', !this.$store.getters.isMenu);
+      },
+      saveState: function() {
+        let tmpState = {};
+
+        for (let name in this.$store.state) {
+          if (this.$store.state.hasOwnProperty(name)) {
+            tmpState[name] = this.$store.state[name];
+          }
+        }
+
+        localforage.setItem('state', tmpState)
       }
     }
   };
