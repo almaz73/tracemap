@@ -2,7 +2,7 @@
   <div>
     <Header/>
     <Menu/>
-    <Alert/>
+    <Alert v-if="~~without.indexOf('Alert')"/>
   </div>
 </template>
 
@@ -17,6 +17,12 @@
       Header,
       Menu,
       Alert
+    },
+    props: {
+      without: {
+        type: Array,
+        default: () => []
+      }
     }
   };
 </script>

@@ -9,7 +9,8 @@ const createStore = () => {
     state: {
       isMenu: false,
       alarms: [],
-      editTools: []
+      editTools: [],
+      editLayers: []
     },
     getters: {
       isMenu(state) {
@@ -20,6 +21,9 @@ const createStore = () => {
       },
       editTools(state) {
         return state.editTools;
+      },
+      editLayers(state) {
+        return state.editLayers;
       }
     },
     mutations: {
@@ -29,30 +33,33 @@ const createStore = () => {
       setAlarms(state, alarms) {
         state.alarms = alarms;
       },
-      setEditTool(state, layerName) {
-        state.editTools.push(layerName)
+      setEditTool(state, toolName) {
+        let exist = state.editTools.indexOf(toolName);
+        if (exist > -1) state.editTools.splice(exist, 1);
+        else state.editTools.push(toolName)
       },
-      removeEditTool(state, layerName) {
-        let exist = state.editTools.indexOf(layerName);
-        if (exist > -1) state.editTools.splice(exist, 1)
+      setEditLayer(state, layerName) {
+        let exist = state.editLayers.indexOf(layerName);
+        if (exist > -1) state.editLayers.splice(exist, 1);
+        else state.editLayers.push(layerName)
       }
     },
     actions: {
+      async getAlarms(content) {
+        const req = await axios.get('https://jsonplaceholder.typicode.com/users');
+        content.commit('setAlarms', req.data);
+      },
       setIsMenu(context, payload) {
         context.commit('setIsMenu', payload);
       },
       setAlarms(context, payload) {
         context.commit('setAlarms', payload);
       },
-      setEditTool(context, layerName) {
-        context.commit('setEditTool', layerName)
+      setEditTool(context, toolName) {
+        context.commit('setEditTool', toolName)
       },
-      removeEditTool(context, layerName) {
-        context.commit('removeEditTool', layerName)
-      },
-      async getAlarms(content) {
-        const req = await axios.get('https://jsonplaceholder.typicode.com/users');
-        content.commit('setAlarms', req.data);
+      setEditLayer(context, layerName) {
+        context.commit('setEditLayer', layerName)
       }
     }
   });

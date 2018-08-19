@@ -1,9 +1,9 @@
 <template>
   <div class="root">
-    <img @click="onSelect('line', isLine)" :class="{'selected': isLine}" src="../../assets/edit/line.png"/>
-    <img @click="onSelect('layers', isLayers)" :class="{'selected': isLayers}" src="../../assets/edit/layers.png"/>
-    <img @click="onSelect('square', isSquare)" :class="{'selected': isSquare}" src="../../assets/edit/square.png"/>
-    <img @click="onSelect('car', isCar)" :class="{'selected': isCar}" src="../../assets/edit/car.png"/>
+    <img @click="onSelect('line')" :class="{'selected': isLine}" src="../../assets/edit/line.png"/>
+    <img @click="onSelect('layers')" :class="{'selected': isLayers}" src="../../assets/edit/layers.png"/>
+    <img @click="onSelect('square')" :class="{'selected': isSquare}" src="../../assets/edit/square.png"/>
+    <img @click="onSelect('car')" :class="{'selected': isCar}" src="../../assets/edit/car.png"/>
   </div>
 </template>
 
@@ -19,8 +19,8 @@
       isCar: () => null
     },
     methods: {
-      onSelect(layer, visible) {
-        this.$store.dispatch(visible ? 'removeEditTool' : 'setEditTool', layer);
+      onSelect(tool) {
+        this.$store.dispatch('setEditTool', tool);
       }
     }
   }

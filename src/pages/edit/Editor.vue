@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Frame/>
-    <MapComponentEdit/>
+    <Frame :without="['Alert']"/>
+    <MapComponentEdit />
 
     <CTool/>
     <CLayers v-if="layers"/>

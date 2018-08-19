@@ -31,5 +31,7 @@ module.exports = {
     "space-before-function-paren": 0,
     "quotes": 0, //отключаем проверку на двойные или одинарные ковычки
     "indent": 0, // отключаем требованние отступа в коде
+    "no-multiple-empty-lines":0,
+    "padded-blocks": 0 // придирки к пустым местам
   }
 }

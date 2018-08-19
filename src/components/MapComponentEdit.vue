@@ -38,6 +38,20 @@
           opacity: 0.5,
           smoothFactor: 1
         }).addTo(this.map);
+
+      let linesLayerGroup = new L.LayerGroup();
+
+      var polyline = new L.Polyline([[55.8, 49.19], [55.82, 49.192]], {color: 'green', weight: 5, opacity: 0.5});
+      linesLayerGroup.addLayer(polyline);
+
+      //linesLayerGroup.removeLayer(polyline);
+
+      this.map.addLayer(linesLayerGroup);
+
+
+      //  map.fitBounds(polyline.getBounds());
+
+      // let layer = new L.Polyline(E.BigArr[vid+"_"+obj.value],{color: color,  weight: weight, opacity: 0.5});
     },
     data() {
       return {
@@ -46,7 +60,7 @@
       }
     },
     methods: {
-      onMapClick: function (e) {
+      onMapClick: function(e) {
         // показать координаты
         // this.popup
         //   .setLatLng(e.latlng)

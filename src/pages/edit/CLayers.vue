@@ -1,7 +1,11 @@
 <template>
   <div class="root">
-    <p v-for="(li, index) in Layers" :key="index">
-      <input type="checkbox" name="a" value="li"> {{li}}
+    <p v-for="(el, index) in Layers" :key="index"
+       @click="showLayer(el)">
+      <input
+        type="checkbox"
+        :checked="$store.state.editLayers.indexOf(el.name) > -1"
+        value="el"> {{el.name}}
     </p>
   </div>
 </template>
@@ -12,15 +16,20 @@
     data() {
       return {
         Layers: [
-          "Районы",
-          "Населенные пункты",
-          "Дороги (улицы)",
-          "Строения",
-          "Водные объекты плош.",
-          "Водные объекты лин.",
-          "Растительность площ",
-          "Просеки"
+          {name: "Районы", polyline: [[55.8, 49.19], [55.82, 49.192]]},
+          {name: "Населенные пункты", polyline: [[55.84, 49.19], [55.826, 49.198]]},
+          {name: "Дороги (улицы)", polyline: [[55.85, 49.19], [55.827, 49.190]]},
+          {name: "Строения"},
+          {name: "Водные объекты плош."},
+          {name: "Водные объекты лин."},
+          {name: "Растительность площ"},
+          {name: "Просеки"}
         ]
+      }
+    },
+    methods: {
+      showLayer(el) {
+        this.$store.dispatch('setEditLayer', el.name)
       }
     }
   }
