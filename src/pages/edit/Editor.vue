@@ -3,23 +3,23 @@
     <Frame/>
     <MapComponentEdit/>
 
-    <cTool />
-    <cLayers v-if="selected == 'layers'"/>
+    <CTool/>
+    <CLayers v-if="layers"/>
   </div>
 </template>
 
 <script>
   import Frame from "../../components/Frame";
   import MapComponentEdit from "../../components/MapComponentEdit";
-  import cTool from "../edit/cTool";
-  import cLayers from "../edit/cLayers";
+  import CTool from "./CTool";
+  import CLayers from "./CLayers";
 
   export default {
     name: "Editor",
-    components: {MapComponentEdit, Frame, cTool, cLayers},
+    components: {MapComponentEdit, Frame, CTool, CLayers},
     computed: {
-      selected: function () {
-        return this.$store.state.showLayer
+      layers() {
+        return this.$store.state.editTools.indexOf('layers') > -1
       }
     }
   }

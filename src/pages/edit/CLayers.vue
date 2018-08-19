@@ -8,7 +8,7 @@
 
 <script>
   export default {
-    name: "cTool",
+    name: "CTool",
     data() {
       return {
         Layers: [
@@ -43,6 +43,7 @@
   }
 
   p {
+    cursor: pointer;
     margin: 0;
     padding: 5px;
     border-bottom: 1px solid #f5f5f5;

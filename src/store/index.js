@@ -9,7 +9,7 @@ const createStore = () => {
     state: {
       isMenu: false,
       alarms: [],
-      showLayer: '2323'
+      editTools: []
     },
     getters: {
       isMenu(state) {
@@ -18,8 +18,8 @@ const createStore = () => {
       alarms(state) {
         return state.alarms;
       },
-      showLayer(state) {
-        return state.showLayer;
+      editTools(state) {
+        return state.editTools;
       }
     },
     mutations: {
@@ -29,8 +29,12 @@ const createStore = () => {
       setAlarms(state, alarms) {
         state.alarms = alarms;
       },
-      setShowLayer(state, layerName) {
-        state.showLayer = layerName
+      setEditTool(state, layerName) {
+        state.editTools.push(layerName)
+      },
+      removeEditTool(state, layerName) {
+        let exist = state.editTools.indexOf(layerName);
+        if (exist > -1) state.editTools.splice(exist, 1)
       }
     },
     actions: {
@@ -40,8 +44,11 @@ const createStore = () => {
       setAlarms(context, payload) {
         context.commit('setAlarms', payload);
       },
-      setShowLayer(context, layerName) {
-        context.commit('setShowLayer', layerName)
+      setEditTool(context, layerName) {
+        context.commit('setEditTool', layerName)
+      },
+      removeEditTool(context, layerName) {
+        context.commit('removeEditTool', layerName)
       },
       async getAlarms(content) {
         const req = await axios.get('https://jsonplaceholder.typicode.com/users');
