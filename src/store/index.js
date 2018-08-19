@@ -1,5 +1,8 @@
 import Vuex from 'vuex';
+import Vue from 'vue';
 import * as axios from 'axios';
+
+Vue.use(Vuex);
 
 const createStore = () => {
   return new Vuex.Store({
