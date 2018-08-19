@@ -1,6 +1,6 @@
 <template>
   <div class="root">
-    <p v-for="(el, index) in Layers" :key="index"
+    <p v-for="(el, index) in layers" :key="index"
        @click="showLayer(el)">
       <input
         type="checkbox"
@@ -13,18 +13,9 @@
 <script>
   export default {
     name: "CTool",
-    data() {
-      return {
-        Layers: [
-          {name: "Районы", polyline: [[55.8, 49.19], [55.82, 49.192]]},
-          {name: "Населенные пункты", polyline: [[55.84, 49.19], [55.826, 49.198]]},
-          {name: "Дороги (улицы)", polyline: [[55.85, 49.19], [55.827, 49.190]]},
-          {name: "Строения"},
-          {name: "Водные объекты плош."},
-          {name: "Водные объекты лин."},
-          {name: "Растительность площ"},
-          {name: "Просеки"}
-        ]
+    props: {
+      layers: {
+        type: Array
       }
     },
     methods: {
