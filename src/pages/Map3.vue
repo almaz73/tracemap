@@ -31,7 +31,7 @@
         bus: {
           geojson: data.freeBus,
           options: {
-            filter: function (feature, layer) {
+            filter: function(feature, layer) {
               if (feature.properties) {
                 return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
               }
@@ -52,11 +52,11 @@
         bicycleAndCampus: {
           geojson: [data.bicycleRental, data.campus],
           options: {
-            style: function (feature) {
+            style: function(feature) {
               return feature.properties && feature.properties.style;
             },
             // onEachFeature: onEachFeature,
-            pointToLayer: function (feature, latlng) {
+            pointToLayer: function(feature, latlng) {
               return L.circleMarker(latlng, {
                 radius: 8,
                 fillColor: "#ff7800",
@@ -91,13 +91,13 @@
               "geometry": {
                 "type": "LineString",
                 "coordinates": [
-                  [-105.0008225440979, 39.751891803969535],
-                  [-104.99820470809937, 39.74979664004068]
+                  [49.2124942, 55.8150812],
+                  [49.1114942, 55.8060812]
                 ]
               },
               "properties": {
                 "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": true
+                "underConstruction": false
               },
               "id": 2
             },
@@ -120,13 +120,23 @@
         },
         myGeoJson: {
           options: {
-            filter: function (feature, layer) {
+            style: function() {
+              return {
+                fillColor: 'red',
+                weight: 12,
+                opacity: 0.7,
+                color: 'red',
+                dashArray: '16',
+                fillOpacity: 0.2
+              };
+            },
+            filter: function(feature, layer) {
+              console.log(' ...==. feature =', feature)
               if (feature.properties) {
                 return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
               }
               return false;
             }
-            // onEachFeature: onEachFeature
           }
         }
       }
