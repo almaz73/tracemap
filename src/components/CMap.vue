@@ -7,6 +7,7 @@
   import L from 'leaflet';
   import * as Draw from 'leaflet-draw';
 
+  console.log("...... Draw=", Draw)
 
   export default {
     name: 'CMap',
@@ -54,13 +55,30 @@
       this.map.on('click', this.onMapClick);
       this.popup = L.popup();
 
-      let guideLayers = [];
       let drawnItems = new L.FeatureGroup();
       this.map.addLayer(drawnItems);
+
+
+      // var MyCustomMarker = L.Icon.extend({
+      //   options: {
+      //     shadowUrl: null,
+      //     iconAnchor: new L.Point(12, 12),
+      //     iconSize: new L.Point(24, 24),
+      //     iconUrl: '../assets/images/pen.jpg'
+      //   }
+      // });
 
       let drawControl = new L.Control.Draw({
         position: 'topright',
         draw: {
+          polyline: {
+            shapeOptions: {
+              editing: {
+                className: ""
+              },
+              color: 'orange'
+            }
+          },
           polygon: {
             allowIntersection: false, // Restricts shapes to simple polygons
             drawError: {
@@ -68,16 +86,31 @@
               message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
             },
             shapeOptions: {
+              editing: {
+                className: ""
+              },
               color: '#97009c'
             }
           },
-          marker: {guideLayers: guideLayers},
-          rectangle: false,
+          marker: {
+            // icon: new MyCustomMarker()
+            shapeOptions: {
+              editing: {
+                className: ""
+              },
+              color: 'red'
+            }
+          },
+          rectangle: {
+            shapeOptions: {
+              color: 'green'
+            }
+          },
           circle: false
         },
         edit: {
           featureGroup: drawnItems,
-          edit: false
+          edit: true
           // Delete still remains useable
         }
       });
