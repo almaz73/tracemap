@@ -1,8 +1,7 @@
 <template>
   <div>
     <Frame/>
-    {{myGeoJson}}
-    <MapComponent :geo="myGeoJson" :center="center" :zoom="13"/>
+    <MapComponent :geo="myGeoJson" :center="center" :zoom="12"/>
   </div>
 </template>
 
@@ -10,7 +9,6 @@
   import MapComponent from '@/components/MapComponent';
   import L from 'leaflet';
   import Frame from '@/components/Frame';
-  import {default as data} from '../assets/sample-geojson';
 
   export default {
     name: 'Map3',
@@ -90,7 +88,7 @@
                 // fillColor: feature.properties.color,
                 weight: 5,
                 opacity: 0.7,
-                color: feature.properties.color || 'gray',
+                color: feature.properties.color || 'gray'
                 // dashArray: '16',
                 // fillOpacity: 0.2
               };

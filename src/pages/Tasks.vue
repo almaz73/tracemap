@@ -17,16 +17,12 @@
           <a href="http://qaru.site/questions/708679/update-properties-of-geojson-to-use-it-with-leaflet">1</a>
         </li>
         <li>Механизм группирования, когда обьекты слишко близко.
-          плагин: <a href="https://leafletjs.com/plugins.html#overlay-animations">Leaflet.FeatureGroup.SubGroup</a>
+          плагин: <a href="https://leafletjs.com/plugins.html#overlay-animations" title="Leaflet.FeatureGroup.SubGroup">1</a>
         </li>
         <li class="s">Слои и контрол включающий и выключаюий эти слои с полиномами</li>
         <li>Кастомизировать кнопки "плюс+минус" леафлет под свой дизайн</li>
       </ul>
       <br/>
-      ... интересно было бы:
-      <ul>
-        <li>Используя localforage сохранить тайлы на диске, для быстрой работы редактора. Indexeddb достаточно емкий для того чтобы всю карту помнить </li>
-      </ul>
     </div>
   </div>
 
