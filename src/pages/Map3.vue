@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Frame/>
-    <MapComponent :geo="myGeoJson" :center="center" :zoom="12"/>
+    <Frame :without="['Alert']"/>
+    <CMapMovie />
   </div>
 </template>
 
 <script>
-  import MapComponent from '@/components/MapComponent';
+  import CMapMovie from "../components/CMapMovie";
   import L from 'leaflet';
   import Frame from '@/components/Frame';
 
@@ -14,7 +14,7 @@
     name: 'Map3',
     components: {
       Frame,
-      MapComponent,
+      CMapMovie,
       L
     },
     data() {
@@ -25,86 +25,8 @@
         url: 'https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWJvdWNoYXVkIiwiYSI6ImNpdTA5bWw1azAyZDIyeXBqOWkxOGJ1dnkifQ.qha33VjEDTqcHQbibgHw3w',
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        freeBus: {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [49.1124942, 55.8050812],
-                  [49.2114942, 55.8100812],
-                  [49.2034532, 55.8110712],
-                  [49.2124942, 55.8150812]
-                ]
-              },
-              "properties": {
-                "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": false,
-                "color": "red"
-              },
-              "id": 1
-            },
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [49.2124942, 55.8150812],
-                  [49.1114942, 55.8060812]
-                ]
-              },
-              "properties": {
-                "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": false,
-                "color": "green"
-              },
-              "id": 2
-            },
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "LineString",
-                "coordinates": [
-                  [49.1114942, 55.8060812],
-                  [49.1024942, 55.8060912]
-                ]
-              },
-              "properties": {
-                "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": false
-              },
-              "id": 3
-            }
-          ]
-        },
-        myGeoJson: {
-          options: {
-            // пример разноцветного geojson
-            style: function (feature, layer) {
-              return {
-                // fillColor: feature.properties.color,
-                weight: 5,
-                opacity: 0.7,
-                color: feature.properties.color || 'gray'
-                // dashArray: '16',
-                // fillOpacity: 0.2
-              };
-            },
-            filter: function (feature) {
-              if (feature.properties) {
-                return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
-              }
-              return false;
-            }
-          }
-        }
+        'Imagery © <a href="http://mapbox.com">Mapbox</a>'
       }
-    },
-    created() {
-      this.myGeoJson.geojson = this.freeBus
     }
   };
 </script>

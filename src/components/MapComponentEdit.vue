@@ -39,7 +39,7 @@
         if (state.type === "setEditLayer") this.updateLayers(state)
       },
       updateLayers() {
-        this.layers.map(el => {
+        this.layers && this.layers.map(el => {
           if (this.$store.state.editLayers.indexOf(el.name) > -1) {
             if (this.polylines[el.name] || !el.polyline) return;
             this.polylines[el.name] = new L.Polyline([el.polyline], {color: 'green', weight: 5, opacity: 0.5});

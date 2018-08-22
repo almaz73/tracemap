@@ -14,12 +14,9 @@
   if (!Draw) alert('err')
 
   export default {
-    name: 'CMap',
+    name: 'CMapDraw',
     components: {L},
     props: {
-      layers: {
-        type: Array
-      },
       center: {
         type: Array,
         default: () => [55.8050812, 49.1924942]
