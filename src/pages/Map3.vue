@@ -28,46 +28,6 @@
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        bus: {
-          geojson: data.freeBus,
-          options: {
-            filter: function(feature, layer) {
-              if (feature.properties) {
-                return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
-              }
-              return false;
-            }
-            // onEachFeature: onEachFeature
-          }
-        },
-        coors: {
-          geojson: data.coorsField,
-          options: {
-            // pointToLayer: function (feature, latlng) {
-            //   return L.marker(latlng, {icon: baseballIcon});
-            // },
-            // onEachFeature: onEachFeature
-          }
-        },
-        bicycleAndCampus: {
-          geojson: [data.bicycleRental, data.campus],
-          options: {
-            style: function(feature) {
-              return feature.properties && feature.properties.style;
-            },
-            // onEachFeature: onEachFeature,
-            pointToLayer: function(feature, latlng) {
-              return L.circleMarker(latlng, {
-                radius: 8,
-                fillColor: "#ff7800",
-                color: "#000",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0.8
-              });
-            }
-          }
-        },
         freeBus: {
           "type": "FeatureCollection",
           "features": [
@@ -77,12 +37,15 @@
                 "type": "LineString",
                 "coordinates": [
                   [49.1124942, 55.8050812],
+                  [49.2114942, 55.8100812],
+                  [49.2034532, 55.8110712],
                   [49.2124942, 55.8150812]
                 ]
               },
               "properties": {
                 "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": false
+                "underConstruction": false,
+                "color": "red"
               },
               "id": 1
             },
@@ -97,7 +60,8 @@
               },
               "properties": {
                 "popupContent": "This is a free bus line that will take you across downtown.",
-                "underConstruction": false
+                "underConstruction": false,
+                "color": "green"
               },
               "id": 2
             },
@@ -120,18 +84,18 @@
         },
         myGeoJson: {
           options: {
-            style: function() {
+            // пример разноцветного geojson
+            style: function (feature, layer) {
               return {
-                fillColor: 'red',
-                weight: 12,
+                // fillColor: feature.properties.color,
+                weight: 5,
                 opacity: 0.7,
-                color: 'red',
-                dashArray: '16',
-                fillOpacity: 0.2
+                color: feature.properties.color || 'gray',
+                // dashArray: '16',
+                // fillOpacity: 0.2
               };
             },
-            filter: function(feature, layer) {
-              console.log(' ...==. feature =', feature)
+            filter: function (feature) {
               if (feature.properties) {
                 return feature.properties.underConstruction !== undefined ? !feature.properties.underConstruction : true;
               }

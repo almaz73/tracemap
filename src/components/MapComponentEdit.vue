@@ -75,20 +75,20 @@
       this.popup = L.popup();
 
       this.$store.subscribe(this.update);
-      this.updateLayers()
+      this.updateLayers();
 
-      // L.marker(this.center).addTo(this.map)
-      //   .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-      //   .openPopup();
+      L.marker(this.center).addTo(this.map)
+        .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
+        .openPopup();
 
       // полином добавлен отдельно
-      // L.polyline([[55.8250812, 49.1924942], [55.8040812, 49.1944942], [55.8040812, 49.1924942]],
-      //   {
-      //     color: 'red',
-      //     weight: 3,
-      //     opacity: 0.5,
-      //     smoothFactor: 1
-      //   }).addTo(this.map);
+      L.polyline([[55.8250812, 49.1924942], [55.8040812, 49.1944942], [55.8040812, 49.1924942]],
+        {
+          color: 'red',
+          weight: 3,
+          opacity: 0.5,
+          smoothFactor: 1
+        }).addTo(this.map);
     }
   };
 </script>
@@ -97,7 +97,6 @@
     position: absolute;
     width: 100%;
     z-index: 1;
-    background: #7f828b;
     z-index: 1;
     height: 100%;
     height: calc(100vh - 50px);

@@ -6,9 +6,7 @@
       <ul>
         <li class="s">Добавить карту, параметризовать (MapComponent)</li>
         <li>Нужна линейка на карте, показывающая длину линии согласно масштабу карты</li>
-        <li>Нужно показывать движение транспорта на карте, оставляя транспорт всегда посередине.
-          плагин:<a href="https://leafletjs.com/plugins.html#overlay-animations">Leaflet.Marker.SlideTo</a>
-        </li>
+        <li>Нужно показывать движение транспорта на карте, оставляя транспорт всегда посередине</li>
         <li>На карте сделать разноцветную траекторию, привязанную к скорости движения транспорта
           <a href="http://hgoebl.github.io/Leaflet.MultiOptionsPolyline/demo/">1</a>,
           <a href="https://gis.stackexchange.com/questions/90193/color-code-a-leaflet-polyline-based-on-additional-values-e-g-altitude-speed">2</a>
@@ -23,6 +21,11 @@
         </li>
         <li class="s">Слои и контрол включающий и выключаюий эти слои с полиномами</li>
         <li>Кастомизировать кнопки "плюс+минус" леафлет под свой дизайн</li>
+      </ul>
+      <br/>
+      ... интересно было бы:
+      <ul>
+        <li>Используя localforage сохранить тайлы на диске, для быстрой работы редактора. Indexeddb достаточно емкий для того чтобы всю карту помнить </li>
       </ul>
     </div>
   </div>
