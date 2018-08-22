@@ -131,3 +131,24 @@
     }
   };
 </script>
+<style>
+  .leaflet-top.leaflet-left{
+    right: 10px !important;
+    bottom: 40px !important;
+    top: inherit;
+    left: inherit;
+    height: 100px !important;
+  }
+  .leaflet-control-zoom-in, .leaflet-control-zoom-out{
+    margin-bottom: 10px;
+    width: 40px !important;
+    height: 40px !important;
+    line-height: 40px !important;
+    border-radius: 40px !important;
+    box-shadow: 0 0 3px #999;
+  }
+  .leaflet-bar{
+    border: none;
+  }
+
+</style>
