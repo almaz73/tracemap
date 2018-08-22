@@ -1,5 +1,9 @@
 <template>
-  <div id="map"></div>
+  <div>
+    <div id="map"></div>
+    <div id='delete'>Удалить</div>
+    <a href='#' id='export'>Сохранить</a>
+  </div>
 </template>
 
 <script>
@@ -7,7 +11,7 @@
   import L from 'leaflet';
   import * as Draw from 'leaflet-draw';
 
-  console.log("...... Draw=", Draw)
+  if (!Draw) alert('err')
 
   export default {
     name: 'CMap',
@@ -74,9 +78,11 @@
           polyline: {
             shapeOptions: {
               editing: {
-                className: ""
+                className: "",
+                weight: 13
               },
-              color: 'orange'
+              color: 'orange',
+              className: ""
             }
           },
           polygon: {
@@ -89,7 +95,9 @@
               editing: {
                 className: ""
               },
-              color: '#97009c'
+              color: '#97009c',
+              weight: 3,
+              className: ""
             }
           },
           marker: {
@@ -98,13 +106,16 @@
               editing: {
                 className: ""
               },
-              color: 'red'
+              color: 'red',
+              className: ""
             }
           },
           rectangle: {
             shapeOptions: {
-              color: 'green'
-            }
+              color: 'green',
+              className: ""
+            },
+            className: ""
           },
           circle: false
         },
@@ -118,13 +129,26 @@
       this.map.addControl(drawControl);
 
       this.map.on(L.Draw.Event.CREATED, function (e) {
-
         // let type = e.layerType
         let layer = e.layer;
-
-        console.log("...... layer =", layer);
         drawnItems.addLayer(layer);
       });
+
+      document.getElementById('delete').onclick = () => drawnItems.clearLayers();
+
+      document.getElementById('export').onclick = function (e) {
+        // Extract GeoJson from featureGroup
+        var data = drawnItems.toGeoJSON();
+
+        console.log("...geoJson=", data)
+
+        // Stringify the GeoJson
+        var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
+
+        // Create export
+        document.getElementById('export').setAttribute('href', 'data:' + convertedData);
+        document.getElementById('export').setAttribute('download', 'data.geojson');
+      }
     }
   };
 </script>
@@ -137,6 +161,27 @@
     z-index: 1;
     height: 100%;
     height: calc(100vh - 50px);
+  }
+
+  #delete, #export {
+    position: absolute;
+    top: 310px;
+    right: 10px;
+    z-index: 100;
+    background: white;
+    color: black;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 70px;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid rgba(0,0,0,0.2);
+  }
+
+  #export {
+    top: 350px;
   }
 
   .leaflet-draw-section {
