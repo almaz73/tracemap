@@ -5,6 +5,7 @@ import Index from '@/pages/Index.vue';
 import Map from '@/pages/Map.vue';
 import Map2 from '@/pages/Map2.vue';
 import Map3 from '@/pages/Map3.vue';
+import Map4 from '@/pages/Map4.vue';
 import Technologies from '@/pages/Technologies';
 import Admin from '@/pages/Admin';
 import Tasks from '@/pages/Tasks';
@@ -33,6 +34,11 @@ export default new Router({
       path: '/map3',
       name: 'Map3',
       component: Map3
+    },
+    {
+      path: '/map4',
+      name: 'Map4',
+      component: Map4
     },
     {
       path: '/technologies',

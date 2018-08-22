@@ -4,8 +4,9 @@
     <router-link to="/technologies">Технологии</router-link>
     <div class="inline">
       <router-link to="/map">Карта</router-link>
-      <router-link to="/map2">Карта2</router-link>
-      <router-link to="/map3">Карта3</router-link>
+      <router-link to="/map2">2</router-link>
+      <router-link to="/map3">3</router-link>
+      <router-link to="/map4" title="На чистом leaflet">4</router-link>
     </div>
     <router-link to="/admin">Админка</router-link>
     <router-link to="/tasks">Задачи</router-link>
