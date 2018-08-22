@@ -54,44 +54,24 @@
       this.map.on('click', this.onMapClick);
       this.popup = L.popup();
 
-      var editableLayers = new L.FeatureGroup();
-      this.map.addLayer(editableLayers);
-
-      // let drawPluginOptions = {
-      //   position: 'topright',
-      //   draw: {
-      //     polygon: {
-      //       allowIntersection: false, // Restricts shapes to simple polygons
-      //       drawError: {
-      //         color: '#e1e100', // Color the shape will turn when intersects
-      //         message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
-      //       },
-      //       shapeOptions: {
-      //         color: '#97009c'
-      //       }
-      //     },
-      //     // disable toolbar item by setting it to false
-      //     polyline: false,
-      //     circle: false, // Turns off this drawing tool
-      //     rectangle: false,
-      //     marker: false
-      //   },
-      //   edit: {
-      //     featureGroup: editableLayers, // REQUIRED!!
-      //     remove: false
-      //   }
-      // };
-      //
-      //  let drawControl = new L.Control.Draw();
-
       let guideLayers = [];
       let drawnItems = new L.FeatureGroup();
+      this.map.addLayer(drawnItems);
 
       let drawControl = new L.Control.Draw({
+        position: 'topright',
         draw: {
-          polyline: {guideLayers: guideLayers},
+          polygon: {
+            allowIntersection: false, // Restricts shapes to simple polygons
+            drawError: {
+              color: '#e1e100', // Color the shape will turn when intersects
+              message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+            },
+            shapeOptions: {
+              color: '#97009c'
+            }
+          },
           marker: {guideLayers: guideLayers},
-          polygon: false,
           rectangle: false,
           circle: false
         },
@@ -104,13 +84,14 @@
 
       this.map.addControl(drawControl);
 
-      console.log("...... Draw=", Draw)
-      console.log("...... L.Control.Draw=", L.Control.Draw)
+      this.map.on(L.Draw.Event.CREATED, function (e) {
 
-      console.log("......drawControl=", drawControl)
-      // this.map.addControl(drawControl);
+        // let type = e.layerType
+        let layer = e.layer;
 
-
+        console.log("...... layer =", layer);
+        drawnItems.addLayer(layer);
+      });
     }
   };
 </script>
@@ -123,7 +104,6 @@
     z-index: 1;
     height: 100%;
     height: calc(100vh - 50px);
-
   }
 
   .leaflet-draw-section {
