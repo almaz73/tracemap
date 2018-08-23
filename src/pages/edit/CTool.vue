@@ -1,9 +1,16 @@
 <template>
   <div class="root">
-    <img @click="onSelect('line')" :class="{'selected': isLine}" src="../../assets/edit/line.png"/>
-    <img @click="onSelect('layers')" :class="{'selected': isLayers}" src="../../assets/edit/layers.png"/>
-    <img @click="onSelect('square')" :class="{'selected': isSquare}" src="../../assets/edit/square.png"/>
-    <img @click="onSelect('car')" :class="{'selected': isCar}" src="../../assets/edit/car.png"/>
+    <img @click="onSelect('line')" v-if="!isLine" src="../../assets/edit/line_gray.png"/>
+    <img @click="onSelect('line')" v-else src="../../assets/edit/line.png"/>
+
+    <img @click="onSelect('layers')" v-if="!isLayers" src="../../assets/edit/layers_gray.png"/>
+    <img @click="onSelect('layers')" v-else src="../../assets/edit/layers.png"/>
+
+    <img @click="onSelect('square')" v-if="!isSquare" src="../../assets/edit/square_gray.png"/>
+    <img @click="onSelect('square')" v-else src="../../assets/edit/square.png"/>
+
+    <img @click="onSelect('car')" v-if="!isCar" src="../../assets/edit/car_gray.png"/>
+    <img @click="onSelect('car')" v-else src="../../assets/edit/car.png"/>
   </div>
 </template>
 
@@ -14,9 +21,15 @@
       isLayers() {
         return this.$store.state.editTools.indexOf('layers') > -1
       },
-      isLine: () => null,
-      isSquare: () => null,
-      isCar: () => null
+      isLine() {
+        return this.$store.state.editTools.indexOf('line') > -1
+      },
+      isSquare() {
+        return this.$store.state.editTools.indexOf('square') > -1
+      },
+      isCar() {
+        return this.$store.state.editTools.indexOf('car') > -1
+      }
     },
     methods: {
       onSelect(tool) {
@@ -33,9 +46,9 @@
     top: 100px;
     left: 100px;
     background: white;
-    height: 30px;
+    height: 40px;
     box-shadow: 2px 2px 5px #999;
-    border-radius: 30px;
+    border-radius: 90px;
     padding: 0 13px;
   }
 
@@ -43,13 +56,14 @@
     width: 30px;
     height: 30px;
     cursor: pointer;
+    margin: 5px 8px;
   }
 
-  img:hover, img.selected {
-    box-shadow: 0 0 5px #999;
-  }
+  /*img:hover, img.selected {*/
+    /*box-shadow: 0 0 5px #999;*/
+  /*}*/
 
   img:active {
-    box-shadow: 0 0 5px red;
+    box-shadow: 0 0 1px red;
   }
 </style>

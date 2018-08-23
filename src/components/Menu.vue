@@ -4,9 +4,9 @@
     <router-link to="/technologies">Технологии</router-link>
     <div class="inline">
       <router-link to="/map">Карта</router-link>
-      <router-link to="/map2">2</router-link>
-      <router-link to="/map3">3</router-link>
-      <router-link to="/map4" title="На чистом leaflet">4</router-link>
+      <router-link to="/map2" title="пример разноцветных линий для привязке к скорости">2</router-link>
+      <router-link to="/map3" title="пример двигающихся маркеров">3</router-link>
+      <router-link to="/map4" title="редактор полиномов">4</router-link>
     </div>
     <router-link to="/admin">Админка</router-link>
     <router-link to="/tasks">Задачи</router-link>

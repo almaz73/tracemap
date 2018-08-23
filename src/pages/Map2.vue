@@ -148,7 +148,7 @@
     box-shadow: 0 0 3px #999;
   }
   .leaflet-bar{
-    border: none;
+    border: none !important;
   }
 
 </style>
