@@ -5,10 +5,11 @@
       <h3>Выбранные технологии</h3>
       <ul>
         <li>vue - самый крутой и быстрый фрейворк, легок в обучении, вобрал в себя лучшее из angular и react</li>
+        <li>vue-router</li>
         <li>vuex - единое хранилище состояний</li>
-        <li>leaflet (vue2-leaflet) - движок карты</li>
-        <li>ESLint</li>
-        <li>axios - для запросов, потому что умеет сразу возвращать json</li>
+        <li>leaflet - движок карты (для добавления полиномов leaflet.draw, движение по карте leaflet.movingMarker)</li>
+        <li>ESLint - анализ js-кода</li>
+        <li>axios - для запросов, умеет сразу возвращать json</li>
 
       </ul>
       <br>

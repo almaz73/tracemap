@@ -1,21 +1,26 @@
 <template>
-  <div>
+  <div style="background: #aaaaaa; height: 100vh">
     <Frame/>
     <div class="links">
       <h1>Главная страница</h1>
       <router-link to="/map"> Карта</router-link>
       <router-link to="/technologies"> Технологии</router-link>
+      <br>
+      <br>
+      <CCombobox/>
     </div>
   </div>
 </template>
 
 <script>
   import Frame from '@/components/Frame';
+  import CCombobox from '../components/CCombobox'
 
   export default {
     name: 'Index',
     components: {
-      Frame
+      Frame,
+      CCombobox
     }
   };
 </script>
