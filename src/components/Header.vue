@@ -2,7 +2,7 @@
   <div class="head">
     <a @click="openMenu()">Меню</a>
     <a @click="saveState()" v-if="isEditPage" title="сохранить состояние">
-      <img src="../assets/buttons/save.png" height="20" width="20"/></a>
+      <img src="../assets/images/buttons/save.png" height="20" width="20"/></a>
   </div>
 </template>
 

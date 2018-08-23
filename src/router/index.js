@@ -7,7 +7,7 @@ import Map2 from '@/pages/Map2.vue';
 import Map3 from '@/pages/Map3.vue';
 import Map4 from '@/pages/Map4.vue';
 import Technologies from '@/pages/Technologies';
-import Admin from '@/pages/Admin';
+import Login from '@/pages/Login';
 import Tasks from '@/pages/Tasks';
 import Editor from '@/pages/edit/Editor';
 
@@ -46,9 +46,9 @@ export default new Router({
       component: Technologies
     },
     {
-      path: '/admin',
-      name: 'Admin',
-      component: Admin
+      path: '/login',
+      name: 'Login',
+      component: Login
     },
     {
       path: '/tasks',

@@ -1,16 +1,16 @@
 <template>
   <div class="root">
-    <img @click="onSelect('line')" v-if="!isLine" src="../../assets/edit/line_gray.png"/>
-    <img @click="onSelect('line')" v-else src="../../assets/edit/line.png"/>
+    <img @click="onSelect('line')" v-if="!isLine" src="../../assets/images/edit/line_gray.png"/>
+    <img @click="onSelect('line')" v-else src="../../assets/images/edit/line.png"/>
 
-    <img @click="onSelect('layers')" v-if="!isLayers" src="../../assets/edit/layers_gray.png"/>
-    <img @click="onSelect('layers')" v-else src="../../assets/edit/layers.png"/>
+    <img @click="onSelect('layers')" v-if="!isLayers" src="../../assets/images/edit/layers_gray.png"/>
+    <img @click="onSelect('layers')" v-else src="../../assets/images/edit/layers.png"/>
 
-    <img @click="onSelect('square')" v-if="!isSquare" src="../../assets/edit/square_gray.png"/>
-    <img @click="onSelect('square')" v-else src="../../assets/edit/square.png"/>
+    <img @click="onSelect('square')" v-if="!isSquare" src="../../assets/images/edit/square_gray.png"/>
+    <img @click="onSelect('square')" v-else src="../../assets/images/edit/square.png"/>
 
-    <img @click="onSelect('car')" v-if="!isCar" src="../../assets/edit/car_gray.png"/>
-    <img @click="onSelect('car')" v-else src="../../assets/edit/car.png"/>
+    <img @click="onSelect('car')" v-if="!isCar" src="../../assets/images/edit/car_gray.png"/>
+    <img @click="onSelect('car')" v-else src="../../assets/images/edit/car.png"/>
   </div>
 </template>
 
