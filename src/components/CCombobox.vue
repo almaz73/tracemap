@@ -39,6 +39,25 @@
         <img v-if="item.stoped" src="../assets/images/combobox/p.png"/>
 
         <span>{{item.name}}</span>
+        <img :ref="el.id+'_'+item.name" @click="openSetPanel(el, item)" class="set"
+             src="../assets/images/combobox/settings.png"/>
+      </div>
+    </div>
+
+    <div v-show="isSetVisible" class="setPanelBack"
+         @click="isSetVisible=!isSetVisible"></div>
+    <div ref="setPanel" @click="onClickPanel" class="setPanel" v-show="isSetVisible">
+      <div>
+        <img src="../assets/images/combobox/createReport.png"/>
+        Создать отчет
+      </div>
+      <div>
+        <img src="../assets/images/combobox/pen.png"/>
+        Режим слежения за ТС
+      </div>
+      <div>
+        <img src="../assets/images/combobox/watch.png"/>
+        Изменить данные ТС
       </div>
     </div>
 
@@ -50,6 +69,7 @@
     name: "CCombobox",
     data() {
       return {
+        isSetVisible: false,
         stateCombo: {
           opened: [2],
           selected: [1, 2, 3, 4, 7],
@@ -147,6 +167,16 @@
             if (this.stateCombo.selectedItem.indexOf(newid) !== 0) this.stateCombo.selectedItem.push(newid);
           })
         });
+      },
+      openSetPanel(el, item) {
+        let bound = this.$refs[el.id + "_" + item.name][0].getBoundingClientRect();
+        let panel = this.$refs['setPanel'];
+        panel.style.top = (bound.top + 40) + "px";
+        panel.style.left = (bound.left - 180) + "px";
+        this.isSetVisible = true;
+      },
+      onClickPanel() {
+        this.isSetVisible = false;
       }
     }
   }
@@ -168,7 +198,6 @@
 
   .head {
     color: #304FFE;
-    /*line-height: 16px;*/
     font-size: 14px;
     font-weight: 600;
     padding: 20px 26px;
@@ -181,11 +210,10 @@
 
   .combo-el {
     padding: 5px 0 0px;
-
   }
 
   .combo-el:hover {
-    background: #f5f5f5;
+    background: #f1f1f1;
   }
 
   .combo-el .img0 {
@@ -199,6 +227,7 @@
 
   .combo-item {
     padding: 7px 0px 12px;
+    position: relative;
   }
 
   .hr {
@@ -207,5 +236,43 @@
     background: #ddd;
     margin: 0 auto;
     margin-top: 15px
+  }
+
+  .set {
+    position: absolute !important;
+    margin-top: -5px;
+    right: 5px;
+  }
+
+  .setPanel {
+    position: absolute;
+    background: #FFFFFF;
+    box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.35);
+    border-radius: 2px;
+    width: 222px;
+    top: 100px;
+    padding-top: 8px;
+  }
+
+  .setPanel div {
+    height: 40px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .setPanel div:hover {
+    background: #f1f1f1;
+  }
+
+  .setPanel img {
+    margin: 0 8px 0 12px;
+  }
+
+  .setPanelBack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
   }
 </style>

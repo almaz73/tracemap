@@ -13,7 +13,8 @@
         <p><input :type="isShowPassword?'text':'password'" placeholder="Пароль">
           <img @click="isShowPassword=!isShowPassword" class="autoriz-eye" src="../assets/images/autoriz/eye.png"/>
         </p>
-        <button @click="onSubmit()">ВХОД</button>
+        <!-- событие submit не будет перезагружать страницу (prevent)-->
+        <button  @click.stop.prevent="onSubmit()">ВХОД</button>
       </form>
     </div>
   </div>
