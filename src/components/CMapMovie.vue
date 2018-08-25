@@ -5,7 +5,7 @@
 <script>
 
   import L from 'leaflet';
-  import '../components/movingMarker';
+  import '../assets/vendor/Leaflet.MovingMarker/MovingMarker';
 
   export default {
     name: 'MapComponentEdit',
