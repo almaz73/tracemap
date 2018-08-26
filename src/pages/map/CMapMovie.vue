@@ -5,7 +5,7 @@
 <script>
 
   import L from 'leaflet';
-  import '../assets/vendor/Leaflet.MovingMarker/MovingMarker';
+  import '../../assets/vendor/Leaflet.MovingMarker/MovingMarker';
 
   export default {
     name: 'MapComponentEdit',
@@ -32,8 +32,6 @@
     },
     methods: {
       onMapClick(e) {
-        // показать координаты
-        // this.popup.setLatLng(e.latlng).setContent(e.latlng.toString()).openOn(this.map);
         console.log('[' + e.latlng.lat + ', ' + e.latlng.lng + '],')
       }
     },
@@ -75,22 +73,25 @@
 
 
       this.map.fitBounds(kazanOrenburgAstrhanZroslavlMoskow); // Важная граница для масштабирования
+      // -=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
 
 // ================по нажатию на маркер поедет========================================================
       var marker1 = L.Marker.movingMarker(kievKazan, [1000]).addTo(this.map);
       L.polyline(kievKazan).addTo(this.map);
-      marker1.once('click', function () {
+      marker1.once('click', function() {
         marker1.start();
         marker1.closePopup();
         marker1.unbindPopup();
-        marker1.on('click', function () {
+        marker1.on('click', function() {
           if (marker1.isRunning()) {
             marker1.pause();
           } else {
             marker1.start();
           }
         });
-        setTimeout(function () {
+        setTimeout(function() {
           marker1.bindPopup('<b>Click me to pause !</b>').openPopup();
         }, 2000);
       });
@@ -105,7 +106,7 @@
       L.polyline(kazanOrenburgAstrhanZroslavlMoskow, {color: 'red'}).addTo(this.map);
 
 
-      marker2.on('end', function () {
+      marker2.on('end', function() {
         marker2.bindPopup('<b>Welcome to Moscow !</b>', {closeOnClick: false})
           .openPopup();
       });
@@ -122,12 +123,12 @@
 
       var marker4 = L.Marker.movingMarker([[55.72711017944887, 49.34251539098401]], []).addTo(this.map);
 
-      marker3.on('loop', function (e) {
+      marker3.on('loop', function(e) {
         marker3.loops++;
         if (e.elapsedTime < 50) {
           marker3.getPopup().setContent("<b>Loop: " + marker3.loops + "</b>")
           marker3.openPopup();
-          setTimeout(function () {
+          setTimeout(function() {
             marker3.closePopup();
 
             if (!marker1.isEnded()) {
@@ -144,7 +145,7 @@
         }
       });
 
-      this.map.on("click", function (e) {
+      this.map.on("click", function(e) {
         marker4.moveTo(e.latlng, 2000);
       });
 

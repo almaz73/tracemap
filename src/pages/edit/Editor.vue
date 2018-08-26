@@ -10,7 +10,7 @@
 
 <script>
   import Frame from "../../components/Frame";
-  import MapComponentEdit from "../../components/MapComponentEdit";
+  import MapComponentEdit from "../map/MapComponentEdit";
   import CTool from "./CTool";
   import CLayers from "./CLayers";
 

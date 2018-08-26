@@ -2,11 +2,11 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 import Index from '@/pages/Index.vue';
-import Map from '@/pages/Map.vue';
-import Map2 from '@/pages/Map2.vue';
-import Map3 from '@/pages/Map3.vue';
-import Map4 from '@/pages/Map4.vue';
-import Map5 from '@/pages/Map5.vue';
+import Map from '@/pages/map/Map.vue';
+import Map2 from '@/pages/map/Map2.vue';
+import Map3 from '@/pages/map/Map3.vue';
+import Map4 from '@/pages/map/Map4.vue';
+import Map5 from '@/pages/map/Map5.vue';
 import Technologies from '@/pages/Technologies';
 import Login from '@/pages/Login';
 import Tasks from '@/pages/Tasks';

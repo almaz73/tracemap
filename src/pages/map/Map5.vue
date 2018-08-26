@@ -6,8 +6,8 @@
 </template>
 
 <script>
-  import Frame from "../components/Frame";
-  import CMapDraw from "../components/CMapDraw";
+  import Frame from "../../components/Frame";
+  import CMapDraw from "./CMapDraw";
 
   export default {
     name: "Map5",

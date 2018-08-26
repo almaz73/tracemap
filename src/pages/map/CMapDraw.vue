@@ -150,5 +150,5 @@
   };
 </script>
 <style>
-  @import "../assets/vendor/Leaflet.draw/style.css";
+  @import "../../assets/vendor/Leaflet.draw/style.css";
 </style>

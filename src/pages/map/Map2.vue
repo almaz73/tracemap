@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import MapComponent from '@/components/MapComponent';
+  import MapComponent from '../map/MapComponent';
   import Frame from '@/components/Frame';
 
   export default {
