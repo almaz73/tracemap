@@ -4,11 +4,11 @@
     <router-link to="/">Главная</router-link>
     <router-link to="/technologies">Технологии</router-link>
     <div class="inline">
-      <router-link to="/map">Карта</router-link>
+      <router-link to="/mapShow">Карта</router-link>
+      <router-link to="/map">1</router-link>
       <router-link to="/map2" title="пример разноцветных линий для привязке к скорости">2</router-link>
       <router-link to="/map3" title="пример двигающихся маркеров">3</router-link>
       <router-link to="/map4" title="редактор полиномов">4</router-link>
-      <router-link to="/map5" title="Линейка">5</router-link>
     </div>
     <router-link to="/tasks">Задачи</router-link>
     <router-link to="/edit">Editor</router-link>
