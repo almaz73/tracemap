@@ -1,5 +1,6 @@
 <template>
   <div class="menu" :class="{open: isMenu}" @click="closeWindow()">
+    <router-link to="/resault">R e s a u l t &nbsp;   p a g e</router-link>
     <router-link to="/login">Панель авторизации</router-link>
     <router-link to="/">Главная</router-link>
     <router-link to="/technologies">Технологии</router-link>

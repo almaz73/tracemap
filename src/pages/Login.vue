@@ -24,7 +24,7 @@
   import Frame from "../components/Frame";
 
   export default {
-    name: 'Admin',
+    name: 'Login',
     components: {Frame},
     data() {
       return {

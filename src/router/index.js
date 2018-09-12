@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+import Resault from '@/pages/Resault.vue';
 import Index from '@/pages/Index.vue';
 import MapShow from '@/pages/MapShow.vue';
 import Map from '@/pages/map/Map.vue';
@@ -16,6 +17,11 @@ Vue.use(Router);
 
 export default new Router({
   routes: [
+    {
+      path: '/resault',
+      name: 'Resault',
+      component: Resault
+    },
     {
       path: '/',
       name: 'Index',

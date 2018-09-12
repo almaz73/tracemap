@@ -42,13 +42,10 @@ function setDegree(deg) {
   let obj = document.getElementsByClassName('car')[0];
   if (obj && obj.style) {
     obj.style.transform = "rotate(" + deg + "deg)";
-  }
-
-  // console.log("...... this=", this)
-
-  if (!L.isSaid) { // костыль, чтобы отобразился автомобиль
-    L.isSaid = true;
-    console.log("...... deg=", deg)
+    // if (!L.isSaid) { // костыль, чтобы отобразился автомобиль
+    //   L.isSaid = true;
+    //   console.log("...", deg)
+    // }
   }
 }
 

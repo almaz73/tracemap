@@ -9,9 +9,6 @@
 
   export default {
     name: 'App',
-    beforeCreate() {
-      this.$store.dispatch('getAlarms');
-    },
     data({store}) {
       return {
         data: this.$store.state.alarms
@@ -77,4 +74,5 @@
   .leaflet-bar {
     border: none !important;
   }
+  /* end стилизация кнопки масшталирования карты*/
 </style>

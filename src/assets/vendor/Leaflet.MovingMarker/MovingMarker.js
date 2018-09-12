@@ -1,4 +1,4 @@
-// сторонняя библиотека
+// сторонняя библиотека.. пока используется дороботанная для показа машшин assets/js/movingMarker.js
 import L from 'leaflet';
 
 L.interpolatePosition = function (p1, p2, duration, t) {
