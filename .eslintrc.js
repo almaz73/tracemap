@@ -34,5 +34,7 @@ module.exports = {
     "no-multiple-empty-lines":0,
     "padded-blocks": 0, // придирки к пустым местам
     "new-cap": 0, // придирается, что метоод не начинается с большой буквы
+    "no-async-in-computed-properties": 0,
+    "comma-dangle": 0
   }
 }

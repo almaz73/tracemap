@@ -63,6 +63,7 @@ const createStore = () => {
         state.isShowTool = bool
       },
       setTools(state, elem) {
+        state.tools = [];
         if (elem.val) state.tools.push(elem);
         else {
           state.tools = state.tools.filter(el => {

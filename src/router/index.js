@@ -23,7 +23,7 @@ export default new Router({
       component: Resault
     },
     {
-      path: '/',
+      path: '/index',
       name: 'Index',
       component: Index
     },
@@ -63,7 +63,7 @@ export default new Router({
       component: Login
     },
     {
-      path: '/tasks',
+      path: '/',
       name: 'Tasks',
       component: Tasks
     },
