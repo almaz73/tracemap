@@ -12,7 +12,9 @@
   import L from 'leaflet';
   import * as Draw from 'leaflet-draw';
   import '../assets/vendor/Leaflet.PolylineMeasure/PolylineMeasure';
-  import CONSTANTS from './../constants';
+  // import CONSTANTS from '../assets/js/constants';
+  import application from '../assets/js/application';
+  import * as integration from '../assets/js/integration';
 
   if (!Draw) alert('err');
 
@@ -97,8 +99,10 @@
         shadowUrl: require('leaflet/dist/images/marker-shadow.png')
       });
 
-      let tile = L.tileLayer(...CONSTANTS.googleStreets);
+      let tile = L.tileLayer(...application.tiles.googleStreets);
       this.map = new L.Map('map').addLayer(tile).setView(this.center, this.zoom);
+
+      application.map = this.map;
 
       // инструменты изменения расстояний
       this.scale = L.control.scale({maxWidth: 240, metric: true, imperial: false, position: 'bottomleft'});
@@ -196,6 +200,11 @@
         document.getElementById('export').setAttribute('href', 'data:' + convertedData);
         document.getElementById('export').setAttribute('download', 'data.geojson');
       }
+
+      // интеграция, добавляется сокет и рисуется
+      integration.initializeSockets();
+      integration.draw(this.map);
+      integration.click()
     }
   };
 </script>

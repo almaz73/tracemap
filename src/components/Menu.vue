@@ -1,6 +1,6 @@
 <template>
   <div class="menu" :class="{open: isMenu}" @click="closeWindow()">
-    <router-link to="/resault">R e s a u l t &nbsp;   p a g e</router-link>
+    <router-link to="/">R e s a u l t &nbsp; p a g e</router-link>
     <router-link to="/login">Панель авторизации</router-link>
     <router-link to="/index">Главная</router-link>
     <router-link to="/technologies">Технологии</router-link>
@@ -11,7 +11,7 @@
       <router-link to="/map3" title="пример двигающихся маркеров">3</router-link>
       <router-link to="/map4" title="редактор полиномов">4</router-link>
     </div>
-    <router-link to="/">Задачи</router-link>
+    <router-link to="/tasks">Задачи</router-link>
     <router-link to="/edit">Editor</router-link>
   </div>
 </template>

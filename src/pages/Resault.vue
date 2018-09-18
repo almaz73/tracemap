@@ -6,6 +6,7 @@
     <cTool v-if="$store.state.isShowTool"/>
     <cLayers v-if="isLayers && $store.state.isShowTool"/>
     <cCarCombobox v-if="isCar && $store.state.isShowTool"/>
+    <Integration/>
   </div>
 </template>
 
@@ -16,10 +17,11 @@
   import cTool from "../components/cTool"
   import cLayers from "../components/cLayers"
   import cCarCombobox from "../components/cCarCombobox"
+  import Integration from "./Integration";
 
   export default {
     name: "Resault",
-    components: {cMapEdit, cMenuSearch, cTool, cLayers, cCarCombobox},
+    components: {Integration, cMapEdit, cMenuSearch, cTool, cLayers, cCarCombobox},
     computed: {
       isLayers() {
         return this.$store.getters.tools.find(el => {

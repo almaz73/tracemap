@@ -18,7 +18,7 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/resault',
+      path: '/',
       name: 'Resault',
       component: Resault
     },
@@ -63,7 +63,7 @@ export default new Router({
       component: Login
     },
     {
-      path: '/',
+      path: '/tasks',
       name: 'Tasks',
       component: Tasks
     },
