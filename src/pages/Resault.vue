@@ -5,6 +5,7 @@
     <cMenuSearch/>
     <cTool v-if="$store.state.isShowTool" :showLayers="layers.length>0" :showCars="cars.length>0"/>
     <cLayers v-if="isLayers && $store.state.isShowTool" :layers="layers"/>
+    <cObjectLayers v-if="isObjectLayers && $store.state.isShowTool" :objectLayers="objectLayers"/>
     <cCarLayers v-if="isCar" :layers="cars"/>
     <cCarCombobox v-if="isCar2 && $store.state.isShowTool"/>
     <Integration @setTile="setTile"/>
@@ -19,6 +20,7 @@
   import cMenuSearch from "../components/cMenuSearch"
   import cTool from "../components/cTool"
   import cLayers from "../components/cLayers"
+  import cObjectLayers from "../components/cObjectLayers"
   import cCarLayers from "../components/cCarLayers"
   import cCarCombobox from "../components/cCarCombobox"
   import Integration from "./Integration"
@@ -35,12 +37,14 @@
       cMenuSearch,
       cTool,
       cLayers,
+      cObjectLayers,
       cCarLayers,
       cCarCombobox
     },
     data() {
       return {
         layers: [],
+        objectLayers: [],
         tile: null,
         cars: [
           {
@@ -79,6 +83,11 @@
           return el.tool === 'layers' && el.val === true
         });
       },
+      isObjectLayers() {
+        return this.$store.getters.tools.find(el => {
+          return el.tool === 'objectLayers' && el.val === true
+        });
+      },
       isCar() {
         return this.$store.getters.tools.find(el => {
           return el.tool === 'car' && el.val === true
@@ -93,6 +102,7 @@
     methods: {
       setLayer(val) {
         this.layers = val;
+        this.objectLayers = val;
       },
       setTile(val) {
         this.tile = val;

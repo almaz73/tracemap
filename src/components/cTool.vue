@@ -10,6 +10,11 @@
       <img v-else src="../assets/images/edit/layers.png"/>
     </span>
 
+    <span @click="onSelect('objectLayers')" v-if="showObjectLayers">
+      <img v-if="!isObjectLayers" src="../assets/images/edit/layers_gray.png"/>
+      <img v-else src="../assets/images/edit/layers.png"/>
+    </span>
+
     <span @click="onSelect('square')">
       <img v-if="!isSquare" src="../assets/images/edit/square_gray.png"/>
       <img v-else src="../assets/images/edit/square.png"/>
@@ -33,6 +38,9 @@
       isLayers: function () {
         return this.$store.getters.tools.find(el => el.tool === 'layers' && el.val === true)
       },
+      isObjectLayers: function () {
+        return this.$store.getters.tools.find(el => el.tool === 'objectLayers' && el.val === true)
+      },
       isLine: function () {
         return this.$store.getters.tools.find(el => el.tool === 'line' && el.val === true)
       },
@@ -48,6 +56,10 @@
     },
     props: {
       showLayers: {
+        type: Boolean,
+        default: true
+      },
+      showObjectLayers: {
         type: Boolean,
         default: true
       },
