@@ -20,7 +20,7 @@
       // заполняем store через диспатч из локалфораже
       async function initializeApp() {
         await localforage.getItem('state', function (a, storage) {
-          Object.keys(storage).map(el => {
+          storage && Object.keys(storage).map(el => {
             if (el === "editTools") {
               storage[el].map(item => me.$store.dispatch('setEditTool', item));
             }
@@ -60,6 +60,10 @@
     top: inherit;
     left: inherit;
     height: 100px !important;
+  }
+
+  .leaflet-top.leaflet-right {
+    top: 60px;
   }
 
   .leaflet-control-zoom-in, .leaflet-control-zoom-out {

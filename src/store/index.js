@@ -37,7 +37,7 @@ const createStore = () => {
       },
       tools(state) {
         return state.tools
-      }
+      },
     },
     mutations: {
       setIsMenu(state, isMenu) {
@@ -51,10 +51,10 @@ const createStore = () => {
         if (exist > -1) state.editTools.splice(exist, 1);
         else state.editTools.push(toolName)
       },
-      setEditLayer(state, layerName) {
-        let exist = state.editLayers.indexOf(layerName);
+      setEditLayer(state, layerId) {
+        let exist = state.editLayers.indexOf(layerId);
         if (exist > -1) state.editLayers.splice(exist, 1);
-        else state.editLayers.push(layerName)
+        else state.editLayers.push(layerId)
       },
       setPoints(state, points) {
         state.points = points;
@@ -82,8 +82,8 @@ const createStore = () => {
       setEditTool(context, toolName) {
         context.commit('setEditTool', toolName)
       },
-      setEditLayer(context, layerName) {
-        context.commit('setEditLayer', layerName)
+      setEditLayer(context, layerId) {
+        context.commit('setEditLayer', layerId)
       },
       setShowTool(context, bool) {
         context.commit('setShowTool', bool)
@@ -93,6 +93,8 @@ const createStore = () => {
       },
       async getAlarms(context) {
         const req = await axios.get('/ambulance/dictionaries/actions?codes=48');
+
+        // http://localhost:58080/amb/dictionaries/parameterValues
 
         context.commit('setAlarms', req.data);
       },

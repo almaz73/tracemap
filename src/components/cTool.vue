@@ -5,7 +5,7 @@
       <img v-else src="../assets/images/edit/line.png"/>
     </span>
 
-    <span @click="onSelect('layers')">
+    <span @click="onSelect('layers')" v-if="showLayers">
       <img v-if="!isLayers" src="../assets/images/edit/layers_gray.png"/>
       <img v-else src="../assets/images/edit/layers.png"/>
     </span>
@@ -15,8 +15,12 @@
       <img v-else src="../assets/images/edit/square.png"/>
     </span>
 
-    <span @click="onSelect('car')">
+    <span @click="onSelect('car')" v-if="showCars">
       <img v-if="!isCar" src="../assets/images/edit/car_gray.png"/>
+      <img v-else src="../assets/images/edit/car.png"/>
+    </span>
+    <span @click="onSelect('car2')">
+      <img v-if="!isCar2" src="../assets/images/edit/car_gray.png"/>
       <img v-else src="../assets/images/edit/car.png"/>
     </span>
   </div>
@@ -37,6 +41,18 @@
       },
       isCar: function () {
         return this.$store.getters.tools.find(el => el.tool === 'car' && el.val === true)
+      },
+      isCar2: function () {
+        return this.$store.getters.tools.find(el => el.tool === 'car2' && el.val === true)
+      }
+    },
+    props: {
+      showLayers: {
+        type: Boolean,
+        default: true
+      },
+      showCars: {
+        type: Boolean
       }
     },
     methods: {

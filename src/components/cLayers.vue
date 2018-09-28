@@ -4,8 +4,8 @@
        @click="showLayer(el)">
       <input
         type="checkbox"
-        :checked="$store.state.editLayers.indexOf(el.name) > -1"
-        value="el"> {{el.name}}
+        :checked="$store.state.editLayers.indexOf(el.id) > -1"/>
+      {{el.name}}
     </p>
   </div>
 </template>
@@ -44,7 +44,8 @@
     },
     methods: {
       showLayer(el) {
-        this.$store.dispatch('setEditLayer', el.name)
+        this.$store.dispatch('setEditLayer', el.id);
+        this.$root.$emit('selectedLayer', el.id, this.$store.state.editLayers.indexOf(el.id) > -1);
       }
     }
   }

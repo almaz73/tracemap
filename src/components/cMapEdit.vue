@@ -1,6 +1,6 @@
 <template>
   <div>
-
+    <div style="display: none">{{changeTile}}</div>
     <div id="map"></div>
     <div id='delete' v-show="showButtons">Удалить</div>
     <a href='#' id='export' v-show="showButtons">Сохранить</a>
@@ -12,9 +12,7 @@
   import L from 'leaflet';
   import * as Draw from 'leaflet-draw';
   import '../assets/vendor/Leaflet.PolylineMeasure/PolylineMeasure';
-  // import CONSTANTS from '../assets/js/constants';
   import application from '../assets/js/application';
-  import * as integration from '../assets/js/integration';
 
   if (!Draw) alert('err');
 
@@ -29,6 +27,9 @@
       zoom: {
         type: Number,
         default: 13
+      },
+      tile: {
+        type: Object
       }
     },
     data() {
@@ -46,6 +47,7 @@
       },
       onMeasure() {
         this.showMeasure = false;
+
         function takePen(that) {
           if (!that.showMeasure && !!document.querySelector('.leaflet-control-scale-line')) {
             that.showMeasure = true;
@@ -54,6 +56,7 @@
             setTimeout(() => takePen(that), 100);
           }
         }
+
         takePen(this)
       }
     },
@@ -88,6 +91,10 @@
 
         return isSquare;
       },
+      changeTile() {
+        this.tile && application.map.addLayer(this.tile);
+        return true;
+      }
     },
     mounted() {
       this.$store.subscribe(this.onMeasure);
@@ -99,10 +106,14 @@
         shadowUrl: require('leaflet/dist/images/marker-shadow.png')
       });
 
-      let tile = L.tileLayer(...application.tiles.googleStreets);
-      this.map = new L.Map('map').addLayer(tile).setView(this.center, this.zoom);
 
+      this.map = new L.Map('map').setView(this.center, this.zoom);
       application.map = this.map;
+
+      setTimeout(() => {
+        // Если данные для подложки не переданы, загружаем по умолчанию
+        if (!this.tile) application.map.addLayer(L.tileLayer(...application.tiles.googleStreets));
+      }, 1000);
 
       // инструменты изменения расстояний
       this.scale = L.control.scale({maxWidth: 240, metric: true, imperial: false, position: 'bottomleft'});
@@ -200,11 +211,6 @@
         document.getElementById('export').setAttribute('href', 'data:' + convertedData);
         document.getElementById('export').setAttribute('download', 'data.geojson');
       }
-
-      // интеграция, добавляется сокет и рисуется
-      integration.initializeSockets();
-      integration.draw(this.map);
-      integration.click()
     }
   };
 </script>
@@ -219,5 +225,43 @@
 
   #delete:hover, #export:hover {
     background: #f2f2f2;
+  }
+
+  .leaflet-popup-content-wrapper {
+    padding: 1px;
+    text-align: left;
+    border-radius: 12px;
+  }
+
+  .leaflet-popup-content-wrapper {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .leaflet-popup-content-wrapper,
+  .leaflet-popup-tip {
+    /*background: white;*/
+    color: #333;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
+  }
+
+  .leaflet-popup-content {
+    margin: 13px 19px;
+    line-height: 1.4;
+  }
+
+  .leaflet-popup-content p {
+    margin: 18px 0;
+  }
+
+  .own-popup {
+    margin-bottom: 0;
+  }
+
+  .own-popup .leaflet-popup-tip-container {
+    display: none;
+  }
+
+  .own-popup .leaflet-popup-content-wrapper {
+    padding: 0;
   }
 </style>

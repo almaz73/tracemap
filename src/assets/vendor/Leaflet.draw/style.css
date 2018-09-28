@@ -8,7 +8,7 @@
 
 #delete, #export {
   position: absolute;
-  top: 310px;
+  top: 350px;
   right: 10px;
   z-index: 100;
   background: white;
@@ -24,7 +24,7 @@
 }
 
 #export {
-  top: 350px;
+  top: 390px;
 }
 
 .leaflet-draw-section {
