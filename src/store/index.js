@@ -8,13 +8,15 @@ Vue.use(Vuex);
 const createStore = () => {
   return new Vuex.Store({
     state: {
-      isMenu: false,
-      alarms: [],
-      editTools: [],
+      isMenu: false, // old
+      alarms: [],    // old
+      editTools: [], // old
       editLayers: [],
+      brigades: [],
       points: [],
       isShowTool: true,
       tools: [],
+      notifications: []
     },
     getters: {
       isMenu(state) {
@@ -29,6 +31,9 @@ const createStore = () => {
       editLayers(state) {
         return state.editLayers;
       },
+      brigades(state) {
+        return state.brigades;
+      },
       points(state) {
         return state.points;
       },
@@ -38,6 +43,9 @@ const createStore = () => {
       tools(state) {
         return state.tools
       },
+      notifications(state) {
+        return state.notifications
+      }
     },
     mutations: {
       setIsMenu(state, isMenu) {
@@ -56,6 +64,11 @@ const createStore = () => {
         if (exist > -1) state.editLayers.splice(exist, 1);
         else state.editLayers.push(layerId)
       },
+      setBrigade(state, brigade) {
+        let exist = state.brigades.indexOf(brigade);
+        if (exist > -1) state.brigades.splice(exist, 1);
+        else state.brigades.push(brigade)
+      },
       setPoints(state, points) {
         state.points = points;
       },
@@ -70,6 +83,11 @@ const createStore = () => {
             return el.tool !== elem.tool;
           })
         }
+      },
+      setNotification(state, text) {
+        let exist = state.notifications.indexOf(text);
+        if (exist > -1) state.notifications.splice(exist, 1);
+        else state.notifications.push(text)
       }
     },
     actions: {
@@ -84,6 +102,9 @@ const createStore = () => {
       },
       setEditLayer(context, layerId) {
         context.commit('setEditLayer', layerId)
+      },
+      setBrigade(context, brigade) {
+        context.commit('setBrigade', brigade)
       },
       setShowTool(context, bool) {
         context.commit('setShowTool', bool)
@@ -102,7 +123,10 @@ const createStore = () => {
         const req = await axios.get('/ambulance/gis/route?fromLat=46.5234&fromLon=48.23&toLat=46.67211&toLon=48.24');
         let decode = decodePolyline(req.data[0].points);
         context.commit('setPoints', decode);
-      }
+      },
+      setNotification(context, text) {
+        context.commit('setNotification', text)
+      },
     }
   });
 };

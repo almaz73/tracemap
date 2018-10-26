@@ -7,7 +7,7 @@
 
 <script>
   import MapComponent from '../map/MapComponent';
-  import Frame from '@/components/Frame';
+  import Frame from '../draft/components/Frame';
 
   export default {
     name: 'Map2',

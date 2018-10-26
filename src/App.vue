@@ -17,7 +17,7 @@
     mounted() {
       let me = this;
 
-      // заполняем store через диспатч из локалфораже
+      // заполняем store через диспатч из локалфораже (можем восстанавливать вид с предыдущего просмотра)
       async function initializeApp() {
         await localforage.getItem('state', function (a, storage) {
           storage && Object.keys(storage).map(el => {

@@ -1,17 +1,20 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+
 import Resault from '@/pages/Resault.vue';
-import Index from '@/pages/Index.vue';
-import MapShow from '@/pages/MapShow.vue';
-import Map from '@/pages/map/Map.vue';
-import Map2 from '@/pages/map/Map2.vue';
-import Map3 from '@/pages/map/Map3.vue';
-import Map4 from '@/pages/map/Map4.vue';
-import Technologies from '@/pages/Technologies';
-import Login from '@/pages/Login';
-import Tasks from '@/pages/Tasks';
-import Editor from '@/pages/edit/Editor';
+import Password from '@/pages/Password';
+/** удалить потом */
+import Login from '../draft/pages/Login';
+import Index from '../draft/pages/Index.vue';
+import Technologies from '../draft/pages/Technologies';
+import Map from '../draft/pages/map/Map.vue';
+import Map2 from '../draft/pages/map/Map2.vue';
+import Map3 from '../draft/pages/map/Map3.vue';
+import Map4 from '../draft/pages/map/Map4.vue';
+import MapShow from '../draft/pages/MapShow.vue';
+import Editor from '../draft/pages/edit/Editor';
+import Tasks from '../draft/pages/Tasks';
 
 Vue.use(Router);
 
@@ -21,6 +24,11 @@ export default new Router({
       path: '/',
       name: 'Resault',
       component: Resault
+    },
+    {
+      path: '/password',
+      name: 'Password',
+      component: Password
     },
     {
       path: '/index',

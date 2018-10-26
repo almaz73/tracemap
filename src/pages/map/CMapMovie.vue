@@ -169,8 +169,6 @@
     position: absolute;
     width: 100%;
     z-index: 1;
-    z-index: 1;
     height: 100%;
-    height: calc(100vh - 50px);
   }
 </style>

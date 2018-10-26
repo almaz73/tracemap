@@ -1,14 +1,17 @@
 <template>
   <div>
     <div class="triggerShowButton" @click="switchPopups()"></div>
-    <Legend :labels="labels"/>
+    <div class="triggerShowButton online" @click="triggerOnline()"></div>
     <div class="integration" v-if="statusBar">
-      <a href="http://localhost:8080/ambulance/login.html">INTEGRATION:</a>
+      <router-link to="/password">Autorization:</router-link>
       <span style="color: green" v-if="isSocket">Websocket : connected</span>
       <span v-else>Websocket DISCONNECTED</span>
       <span
-        :style="{color: statusBrigadeCoordinates===200? 'green':'red'}">| Brigade coordinates: upd {{timer}}sec.</span>
+        v-if="isVisibleOnlineBrigades"
+        :style="{color: statusBrigadeCoordinates===200? 'green':'red'}"
+      >| Brigade coordinates: upd {{timer}}sec.</span>
     </div>
+    <Legend :labels="legendItems"/>
   </div>
 </template>
 
@@ -48,7 +51,6 @@
     '18': {img: 'dispatcherClosing', text: 'Замена машины'}
   };
 
-
   const callMarkersMap = [];
   let brigadeMarkersMap = {};
   let brigadeQueue = [];
@@ -62,14 +64,15 @@
         isSocket: true,
         statusBrigadeCoordinates: 0,
         isVisiblePopups: false,
-        timer: 0
+        timer: 0,
+        isVisibleOnlineBrigades: false
       }
     },
     computed: {
       statusBar: function () {
         return location.host.indexOf('localhost') > -1
       },
-      labels: function () {
+      legendItems: function () {
         let arr = [];
         Object.keys(brigadeImgConsts).map(el => arr.push(brigadeImgConsts[el]));
         return arr;
@@ -133,7 +136,7 @@
           // при первом запуске надо проверить содержимое storage
           let brigade = localStorage.getItem('focusOnBrigade');
           this.focusOnBrigade(brigade);
-          this.getNewBrigadeCoordinates();
+          if (this.isVisibleOnlineBrigades) this.getNewBrigadeCoordinates();
         } else {
           this.handleNewBrigade(brigades[0]);
         }
@@ -181,7 +184,7 @@
       addCall(call) {
         if (call.latitude && call.longitude) {
 
-          let marker = L.marker([call.latitude, call.longitude]).addTo(application.map);
+          let marker = L.marker([call.latitude, call.longitude]).addTo(this.layerOnlineBrigade);
           let iconName = (colorByCallSignId[call.callSignCode] || colorByCallSignId[2]).img + '.png';
           let iconPath = (call.assigned ? 'assigned/' : '') + iconName;
 
@@ -247,21 +250,21 @@
             oldMarker.setLatLng([marker.latitude, marker.longitude]); // новое местоположение
           }
 
-          oldMarker.getPopup().setContent(marker.name + (controlTime ? ' ' + hours + ':' + minutes : ''));
+          oldMarker.getPopup().setContent(marker.brigadeName + (controlTime ? ' ' + hours + ':' + minutes : ''));
         } else {
-          let myMarker = L.marker([marker.latitude, marker.longitude], {icon: icon}).addTo(application.map);
+          let myMarker = L.marker([marker.latitude, marker.longitude], {icon: icon}).addTo(this.layerOnlineBrigade);
 
           oldMarker = myMarker;
           oldMarker.code = marker.code;
-          oldMarker.name = marker.name;
+          oldMarker.brigadeName = marker.brigadeName;
 
           myMarker.bindPopup(L.popup({
             closeOnClick: false,
             autoClose: false,
             closeButton: false,
             autoPan: false,
-            className: 'own-popup'
-          }).setContent(marker.name + (controlTime ? ' ' + hours + ':' + minutes : '')));
+            className: 'own-popup car-marker'
+          }).setContent(marker.brigadeName + (controlTime ? ' ' + hours + ':' + minutes : '')));
 
           if (this.isVisiblePopups) {
             oldMarker.openPopup();
@@ -284,9 +287,33 @@
           brigade.openPopup && brigade[this.isVisiblePopups ? 'openPopup' : 'closePopup']();
         }
       },
+      triggerOnline() {
+        // скрытие и показ бригад
+        if (this.isVisibleOnlineBrigades) {
+          this.tmpLayers = this.layerOnlineBrigade.getLayers();
+          this.layerOnlineBrigade.clearLayers();
+          this.isVisiblePopups = false;
+        } else {
+          this.tmpLayers && this.tmpLayers.map(el => this.layerOnlineBrigade.addLayer(el));
+          this.getNewBrigadeCoordinates();
+        }
+        this.isVisibleOnlineBrigades = !this.isVisibleOnlineBrigades;
+      },
+      smootHRunningMarkers(bool) {
+        // плавное движение маркеров
+        let carMakers = document.querySelectorAll('.car-marker');
+        for (var i = 0; carMakers.length > i; i++) {
+          carMakers[i].style.transition = bool ? '.5s linear' : '';
+        }
+      },
       async getParams() {
         const req = await axios.get('/ambulance/dictionaries/parameterValues');
-        let tile = L.tileLayer('http://' + window.location.hostname + req.data[46] + '/{z}/{x}/{y}.png', {});
+
+        let tileUrl = req.data[46] + '/{z}/{x}/{y}.png';
+        if (!tileUrl.startsWith('http')) {
+          tileUrl = 'http://' + window.location.hostname + tileUrl;
+        }
+        let tile = L.tileLayer(tileUrl, {});
         this.$emit('setTile', tile);
       },
       async getObservationCoordinates() {
@@ -315,11 +342,14 @@
                   delete brigadeMarkersMap[brigadeId];
                 }
               }
+              this.smootHRunningMarkers(true);
             }
           });
         }
         this.timer = (this.statusBrigadeCoordinates !== 200 || document.hidden) ? 20 : 5;
-        setTimeout(() => this.getNewBrigadeCoordinates(), this.timer * 1000);
+
+        if (this.isVisibleOnlineBrigades) setTimeout(() => this.getNewBrigadeCoordinates(), this.timer * 1000);
+        else this.timer = null;
       }
     },
     created() {
@@ -336,6 +366,11 @@
       window.addEventListener('beforeunload', function (e) {
         localStorage.setItem('mapIsOpen', false);
       }, false);
+
+      this.layerOnlineBrigade = L.layerGroup().addTo(application.map);
+
+      application.map.on('zoomstart', () => this.smootHRunningMarkers(false));
+      application.map.on('zoomend', () => this.smootHRunningMarkers(true));
     },
     beforeDestroy() {
       localStorage.removeItem('mapIsOpen');
@@ -375,8 +410,8 @@
     cursor: pointer;
   }
 
-  .car-marker {
-    transition: transform .5s linear !important;
+  .triggerShowButton.online {
+    left: 417px;
   }
 
 </style>

@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import Frame from "../../components/Frame";
+  import Frame from "../../draft/components/Frame";
   import CMapDraw from "./CMapDraw";
 
   export default {

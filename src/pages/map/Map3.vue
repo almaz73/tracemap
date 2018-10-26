@@ -13,7 +13,7 @@
 <script>
   import CMapMovie from "./CMapMovie";
   import L from 'leaflet';
-  import Frame from '@/components/Frame';
+  import Frame from '../draft/components/Frame';
 
   export default {
     name: 'Map3',

@@ -34,7 +34,7 @@
   .legend {
     z-index: 2;
     position: absolute;
-    bottom: 40px;
+    bottom: 60px;
     left: 20px;
     background: white;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.18);
