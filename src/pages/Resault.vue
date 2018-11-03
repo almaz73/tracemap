@@ -1,5 +1,6 @@
 <template>
   <div>
+    <ModalChoiseDate v-if="isBrigadeWayHistory" @close="isBrigadeWayHistory=false"/>
     <Notification/>
 
     <!--<div style="background: orange; z-index: 100">{{this.$root.username}}</div>-->
@@ -20,7 +21,7 @@
     <Integration @setTile="setTile"/>
     <IntegrationZones @setLayer="setLayer"/>
     <IntegrationBrigadeHistory @setCars="setCars"/>
-    <BrigadeWayHistory v-if="isBrigadeWayHistory"/>
+    <BrigadeWayHistory v-if="isBrigadeHistory"/>
   </div>
 </template>
 
@@ -40,10 +41,12 @@
   import Questions from "../draft/Components/Questions"
   import BrigadeWayHistory from "../components/combobox/BrigadeWayHistory";
   import Legend from "../components/Legend";
+  import ModalChoiseDate from "../components/combobox/ModalChoiseDate";
 
   export default {
     name: "Resault",
     components: {
+      ModalChoiseDate,
       Legend,
       BrigadeWayHistory,
       IntegrationBrigadeHistory,
@@ -62,84 +65,7 @@
       return {
         objectLayers: [],
         tile: null,
-        cars: [
-          {
-            stationName: 'HHH stationName111',
-            id: 1,
-            automobiles: [{
-              regNum: 'BRIGADA111',
-              id: 111
-            }, {
-              regNum: 'BRIGADA222',
-              id: 2222
-            }],
-            children: [{
-              stationName: 'AAA stationName222',
-              id: 11,
-              children: [{
-                id: 44,
-                stationName: 'HHHH stationName333',
-                automobiles: [{
-                  regNum: '999 BRIGADA>>>111',
-                  id: 222220
-                }, {
-                  regNum: '999 BRIGADA>>>222',
-                  id: 222221
-                }],
-              }],
-              automobiles: [{
-                regNum: '888 BRIGADA>>>111',
-                id: 2222720
-              }, {
-                regNum: '888 BRIGADA>>>222',
-                id: 2227221
-              }],
-            }, {
-              stationName: 'AAA444',
-              id: 12
-            }, {
-              stationName: 'AAA555',
-              id: 13
-            }]
-          }, {
-            stationName: 'HHHH stationName 66',
-            id: 2,
-            children: [{
-              id: 4422,
-              stationName: 'HHHH stationName333',
-            }]
-          }, {
-            stationName: 'HHHH stationName777',
-            id: 3
-          }, {
-            stationName: 'HHH stationName 888',
-            id: 4,
-            automobiles: [{
-              regNum: '999 BRIGADA111',
-              id: 9990
-            }, {
-              regNum: '999 BRIGADA222',
-              id: 9991
-            }],
-            children: [{
-              stationName: '999 stationName AAA222',
-              id: 9993,
-              children: [{
-                id: 9995,
-                stationName: '999 stationName HHHH333'
-              }]
-            }, {
-              stationName: '999 stationName AAA444',
-              id: 9996
-            }, {
-              stationName: '999 vAAA555',
-              id: 9997
-            }]
-          }, {
-            stationName: 'HHH stationName 9',
-            id: 5
-          }
-        ],
+        cars: [],
         isBrigadeWayHistory: false
       }
     },
@@ -157,6 +83,11 @@
       isCar2() {
         return this.$store.getters.tools.find(el => {
           return el.tool === 'car2' && el.val === true
+        });
+      },
+      isBrigadeHistory() {
+        return this.$store.getters.tools.find(el => {
+          return el.tool === 'brigadeHistory' && el.val === true
         });
       }
     },

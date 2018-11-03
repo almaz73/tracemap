@@ -23,6 +23,10 @@
       <img v-if="!isCar2" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
+    <span @click="onSelect('brigadeHistory')" >
+      <img v-if="!isBrigadeHistory" src="../../assets/images/edit/car_gray.png"/>
+      <img v-else src="../../assets/images/edit/car.png"/>
+    </span>
   </div>
 </template>
 
@@ -49,6 +53,9 @@
       },
       isCar2: function () {
         return this.$store.getters.tools.find(el => el.tool === 'car2' && el.val === true)
+      },
+      isBrigadeHistory: function () {
+        return this.$store.getters.tools.find(el => el.tool === 'brigadeHistory' && el.val === true)
       }
     },
     props: {

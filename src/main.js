@@ -4,12 +4,13 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import store from './store';
+import Vuetify from 'vuetify'
 // import Vuex from 'vuex';
 
 Vue.config.productionTip = false;
 
 // Vue.use(Vuex);
-
+Vue.use(Vuetify);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

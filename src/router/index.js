@@ -15,6 +15,7 @@ import Map4 from '../draft/pages/map/Map4.vue';
 import MapShow from '../draft/pages/MapShow.vue';
 import Editor from '../draft/pages/edit/Editor';
 import Tasks from '../draft/pages/Tasks';
+import VueTable from '../draft/pages/VueTable';
 
 Vue.use(Router);
 
@@ -79,6 +80,11 @@ export default new Router({
       path: '/edit',
       name: 'Editor',
       component: Editor
+    },
+    {
+      path: '/vuetable',
+      name: 'VueTable',
+      component: VueTable
     }
   ]
 });

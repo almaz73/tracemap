@@ -6,54 +6,56 @@
     <!--<div class="container head">+ Добавить группу</div>-->
     <!--<hr width="90%"/>-->
 
-    <label v-for="(el, k) in layers" :key="k" class="container">
+    <label v-for="(el, k) in layers" :key="k" class="cbox">
       <span class="text" :class="{full: isFull(el), mark: true}" @click.stop="twoFunction(el)">
         {{el.stationName}}
       </span>
-      <span v-if="isChildren(el)" class="triangle"><div :class="traingleClass(el)" @click.stop="twoFunction(el)"></div></span>
+      <span v-if="isChildren(el)" class="triangle">
+        <div :class="traingleClass(el)" @click.stop="twoFunction(el)"></div></span>
 
-      <label class="container" v-if="check('~|'+el.id)" v-for="(el2, k2) in el.children" :key="k2">
+      <label class="cbox" v-if="check('~|'+el.id)" v-for="(el2, k2) in el.children" :key="k2">
         <span class="text" :class="{full: isFull(el2)}" @click.stop="twoFunction(el2)">
           {{el2.stationName}}
         </span>
+        <span v-if="isChildren(el2)" class="triangle">
+          <div :class="traingleClass(el2)" @click.stop="twoFunction(el2)"></div></span>
 
-        <span v-if="isChildren(el2)" class="triangle"><div :class="traingleClass(el2)"
-                                                           @click.stop="twoFunction(el2)"></div></span>
-        <label v-if="check('~|'+el2.id)" class="container" v-for="(el3, k4) in el2.children" :key="k4+'-label'">
+        <label v-if="check('~|'+el2.id)" class="cbox" v-for="(el3, k4) in el2.children" :key="k4+'-label'">
           <span class="text" :class="{full: isFull(el3)}" @click.stop="twoFunction(el3)">
             {{el3.stationName}}
           </span>
-          <span v-if="isChildren(el3)" class="triangle"><div :class="traingleClass(el3)"
-                                                             @click.stop="twoFunction(el3)"></div></span>
+          <span v-if="isChildren(el3)" class="triangle">
+            <div :class="traingleClass(el3)" @click.stop="twoFunction(el3)"></div></span>
+
           <!-- автомобили3 -->
-          <label v-if="check('~L'+el3.id)" class="container auto" v-for="(item3, k5) in el3.automobiles" :key="k5"
+          <label v-if="check('~L'+el3.id)" class="cbox auto" v-for="item3 in el3.automobiles" :key="item3.id"
                  @click.stop="showAuto(item3.id)">
-            <input type="checkbox" @click.stop="" :checked="check(item3.id)">
+            <input :ref="item3.id" type="checkbox" @click.stop="" :checked="check(item3.id)">
             <span class="checkmark"></span>
             <span class="text">{{item3.regNum}}</span>
-            <img @click="openSetPanel(el3, item3)" class="set" src="../../assets/images/set.png"/>
+            <img @click.stop="openSetPanel(el3, item3)" class="set" src="../../assets/images/set.png"/>
           </label>
           <!-- end автомобили3 -->
         </label>
 
         <!-- автомобили2 -->
-        <label v-if="check('~L'+el2.id)" class="container auto" v-for="(item2, k3) in el2.automobiles" :key="k3"
+        <label v-if="check('~L'+el2.id)" class="cbox auto" v-for="item2 in el2.automobiles" :key="item2.id"
                @click.stop="showAuto(item2.id)">
-          <input type="checkbox" @click.stop="" :checked="check(item2.id)">
+          <input :ref="item2.id" type="checkbox" @click.stop="" :checked="check(item2.id)">
           <span class="checkmark"></span>
           <span class="text">{{item2.regNum}}</span>
-          <img @click="openSetPanel(el2, item2)" class="set" src="../../assets/images/set.png"/>
+          <img @click.stop="openSetPanel(el2, item2)" class="set" src="../../assets/images/set.png"/>
         </label>
         <!-- end автомобили2 -->
       </label>
 
       <!-- автомобили -->
-      <label v-for="(item) in el.automobiles" :key="item.id" v-if="check('~L'+el.id)" class="container auto"
+      <label v-for="item in el.automobiles" class="cbox auto" v-if="check('~L'+el.id)" :key="item.id"
              @click.stop="showAuto(item.id)">
-        <input type="checkbox" @click.stop="" :checked="check(item.id)">
+        <input :ref="item.id" type="checkbox" @click.stop="" :checked="check(item.id)">
         <span class="checkmark"></span>
         <span class="text">{{item.regNum}}</span>
-        <img @click.stop="openSetPanel(item.id)" class="set" src="../../assets/images/set.png"/>
+        <img @click.stop="openSetPanel(el, item)" class="set" src="../../assets/images/set.png"/>
       </label>
 
 
@@ -96,8 +98,12 @@
         this.$store.dispatch('setBrigade', id);
         if (!noRequest) this.$root.$emit('showCarTraces', id, this.check(id));
       },
-      openSetPanel(id) {
-        this.$root.$emit('showBrigadeWayHistory', id);
+      openSetPanel(el, item) {
+        setTimeout(() => {
+          // возвращает прежнее состояние чекбокса, которое не должно было менятся
+          this.$refs[item.id][0].checked = !this.$refs[item.id][0].checked;
+        }, 1);
+        this.$root.$emit('showBrigadeWayHistory', item.id);
       }
     }
   }
@@ -125,7 +131,7 @@
     padding: 8px 0;
   }
 
-  .container {
+  .cbox {
     display: block;
     position: relative;
     padding-left: 20px;
@@ -138,11 +144,11 @@
     border-bottom: 1px solid #f9f9f9;
   }
 
-  .container.auto {
+  .cbox.auto {
     padding-left: 50px;
   }
 
-  .container input {
+  .cbox input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -157,11 +163,11 @@
     background-color: #eee;
   }
 
-  .container.auto:hover input ~ .checkmark {
+  .cbox.auto:hover input ~ .checkmark {
     background-color: #ccc;
   }
 
-  .container input:checked ~ .checkmark {
+  .cbox input:checked ~ .checkmark {
     background-color: #5973ff;
     /*#2196F3;*/
   }
@@ -172,11 +178,11 @@
     display: none;
   }
 
-  .container input:checked ~ .checkmark:after {
+  .cbox input:checked ~ .checkmark:after {
     display: block;
   }
 
-  .container .checkmark:after {
+  .cbox .checkmark:after {
     left: 5px;
     top: 2px;
     width: 5px;

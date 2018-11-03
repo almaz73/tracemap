@@ -9,7 +9,7 @@ const createStore = () => {
   return new Vuex.Store({
     state: {
       isMenu: false, // old
-      alarms: [],    // old
+      alarms: [], // old
       editTools: [], // old
       editLayers: [],
       brigades: [],

@@ -1,10 +1,10 @@
 <template>
   <div class="root">
-    <div class="container head">+ Добавить TC</div>
-    <div class="container head">+ Добавить группу</div>
+    <div class="cbox head">+ Добавить TC</div>
+    <div class="cbox head">+ Добавить группу</div>
     <hr width="90%"/>
     <div class="combo">
-      <label class="container " v-for="(el, index) in objectLayers" :key="index" @click="showElement(el)">
+      <label class="cbox " v-for="(el, index) in objectLayers" :key="index" @click="showElement(el)">
         <input type="checkbox" @click.stop="" :checked="check(el.id)">
         <span class="checkmark"></span>
         <span class="triangle" v-if="el.children && el.children.length" @click.stop="showLevel(el.id)">
@@ -14,7 +14,7 @@
 
         <label
           v-if="check('#L'+el.id)"
-          class="container"
+          class="cbox"
           v-for="(el2, index2) in el.children"
           :key="index2"
           @click.stop="showElement(el2)"
@@ -28,7 +28,7 @@
 
           <label
             v-if="check('#L'+el2.id)"
-            class="container"
+            class="cbox"
             v-for="(el3, index3) in el2.children"
             :key="index3"
             @click.stop="showElement(el3)"
@@ -42,7 +42,7 @@
 
             <label
               v-if="check('#L'+el3.id)"
-              class="container"
+              class="cbox"
               v-for="(el4, index3) in el3.children"
               :key="index3"
               @click.stop="showElement(el4)"
@@ -192,7 +192,7 @@
   }
 
   /* Customize the label (the container) */
-  .container {
+  .cbox {
     display: block;
     position: relative;
     padding-left: 20px;
@@ -205,12 +205,12 @@
     border-bottom: 1px solid #f9f9f9;
   }
 
-  .container .text {
+  .cbox .text {
     margin-left: 15px;
   }
 
   /* Hide the browser's default checkbox */
-  .container input {
+  .cbox input {
     position: absolute;
     opacity: 0;
     cursor: pointer;
@@ -227,7 +227,7 @@
   }
 
   /* On mouse-over, add a grey background color */
-  .container:hover input ~ .checkmark {
+  .cbox:hover input ~ .checkmark {
     background-color: #ccc;
   }
 
@@ -236,7 +236,7 @@
   /*}*/
 
   /* When the checkbox is checked, add a blue background */
-  .container input:checked ~ .checkmark {
+  .cbox input:checked ~ .checkmark {
     background-color: #2196F3;
   }
 
@@ -248,12 +248,12 @@
   }
 
   /* Show the checkmark when checked */
-  .container input:checked ~ .checkmark:after {
+  .cbox input:checked ~ .checkmark:after {
     display: block;
   }
 
   /* Style the checkmark/indicator */
-  .container .checkmark:after {
+  .cbox .checkmark:after {
     left: 5px;
     top: 2px;
     width: 5px;

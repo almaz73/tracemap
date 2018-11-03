@@ -13,6 +13,7 @@
     </div>
     <router-link to="/tasks">Задачи</router-link>
     <router-link to="/edit">Editor</router-link>
+    <router-link to="/vuetable">VueTable</router-link>
   </div>
 </template>
 

@@ -8,36 +8,90 @@
       <div style="margin-left: 5px">
         <span class="header">Выберите дату</span>
         <div class="date-row flex">
-          <label class="lable">От</label>
-          <v-flex >
+          <v-layout row wrap>
+            <v-flex>
+              <v-menu
+                ref="menu1"
+                :close-on-content-click="false"
+                v-model="menu1"
+                :nudge-right="40"
+                lazy
+                transition="scale-transition"
+                offset-y
+                full-width
+                max-width="290px"
+                min-width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="dateFormatted"
+                  label="От мм.дд.гггг"
+                  persistent-hint
+                  prepend-icon="event"
+                  @blur="date = parseDate(dateFormatted)"
+                ></v-text-field>
+                <v-date-picker color="blue lighten-1" v-model="date" no-title @input="menu1 = false"></v-date-picker>
+
+              </v-menu>
+            </v-flex>
+          </v-layout>
+        </div>
+        <div class="date-row flex">
+          <v-flex>
             <v-menu
-              ref="menu2"
+              ref="menu1"
               :close-on-content-click="false"
-              v-model="menu2"
+              v-model="menu1"
               :nudge-right="40"
-              :return-value.sync="date"
               lazy
               transition="scale-transition"
               offset-y
               full-width
+              max-width="290px"
               min-width="290px"
             >
               <v-text-field
                 slot="activator"
-                v-model="date"
-                label="Picker without buttons"
+                v-model="dateFormatted"
+                label="До мм.дд.гггг"
+                persistent-hint
                 prepend-icon="event"
-                readonly
+                @blur="date = parseDate(dateFormatted)"
               ></v-text-field>
-              <v-date-picker v-model="date" @input="$refs.menu2.save(date)"></v-date-picker>
-
+              <v-date-picker color="blue lighten-1" v-model="date" no-title @input="menu1 = false"></v-date-picker>
+            </v-menu>
+          </v-flex>
+          <v-flex xs11 sm5>
+            <v-menu
+              ref="menu"
+              :close-on-content-click="false"
+              v-model="menu3"
+              :nudge-right="40"
+              :return-value.sync="time"
+              lazy
+              transition="scale-transition"
+              offset-y
+              full-width
+              max-width="290px"
+              min-width="290px"
+            >
+              <v-text-field
+                slot="activator"
+                v-model="time"
+                class="date-select"
+                label="время"
+                prepend-icon="access_time"
+              ></v-text-field>
+              <v-time-picker
+                color="blue"
+                v-if="menu3"
+                v-model="time"
+                full-width
+                @change="$refs.menu.save(time)"
+              ></v-time-picker>
             </v-menu>
           </v-flex>
 
-        </div>
-        <div class="date-row flex">
-          <label class="lable">До</label>
-          <input class="date" type="date"/>
         </div>
       </div>
       <div class="hr" style="margin-top: 5px"></div>
@@ -66,10 +120,10 @@
 
           <input type="button" style="width: 10px; margin-left: 5px"/>
           <span class="speed-type history-info">
-            <input type="radio" style="margin-left: 15px" value="1" v-model="radio"/>1x
-            <input type="radio" style="margin-left: 15px" value="2" v-model="radio"/>2x
-            <input type="radio" style="margin-left: 15px" value="3" v-model="radio"/>10x
-            <input type="radio" style="margin-left: 15px" value="4" v-model="radio"/>100x
+            <!--<input type="radio" style="margin-left: 15px" value="1" v-model="radio"/>1x-->
+            <!--<input type="radio" style="margin-left: 15px" value="2" v-model="radio"/>2x-->
+            <!--<input type="radio" style="margin-left: 15px" value="3" v-model="radio"/>10x-->
+            <!--<input type="radio" style="margin-left: 15px" value="4" v-model="radio"/>100x-->
           </span>
         </div>
       </div>
@@ -78,31 +132,60 @@
 </template>
 
 <script>
-
   export default {
-    name: "BrigadeWayHistory",
-    data() {
-      return {
-        isSetVisible: false,
-        radio: 1,
-        menu2: false,
-        date: null,
-        menu: false,
-        modal: false,
+    name: "BrigadeWayHistory1",
+    data: vm => ({
+      date: new Date().toISOString().substr(0, 10),
+      dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),
+      menu1: false,
+      time: "",
+      menu2: false,
+      menu3: false,
+      modal2: false
+    }),
+    computed: {
+      computedDateFormatted() {
+        return this.formatDate(this.date)
+      }
+    },
+    watch: {
+      date(val) {
+        this.dateFormatted = this.formatDate(this.date)
       }
     },
     methods: {
-      data: () => ({
-        date: null,
-        menu: false,
-        modal: false,
-        menu2: false
-      })
+      formatDate(date) {
+        if (!date) return null
+        const [year, month, day] = date.split('-');
+        return `${month}/${day}/${year}`
+      },
+      parseDate(date) {
+        if (!date) return null
+        const [month, day, year] = date.split('/');
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+      }
     }
   }
+
 </script>
 
 <style scoped>
+  .theme--light.v-time-picker-clock  {
+    background: black !important;
+  }
+
+  .v-menu__content {
+    position: fixed;
+    display: inline-block;
+    border-radius: 2px;
+    max-width: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    contain: content;
+    will-change: transform;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, .2), 0 8px 10px 1px rgba(0, 0, 0, .14), 0 3px 14px 2px rgba(0, 0, 0, .12);
+  }
+
   .history-info {
     justify-content: space-between;
     display: flex;
@@ -155,7 +238,7 @@
     z-index: 20;
     position: absolute;
     top: 156px;
-    left: 600px;
+    left: 200px;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.18);
   }
 
