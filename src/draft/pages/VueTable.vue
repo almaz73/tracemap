@@ -1,8 +1,8 @@
 <template>
   <div style="margin: 10px">
 
-    <div style="width: 100%; overflow-y: auto">
-      <table class="vue-table" style="white-space: nowrap">
+    <div style="width: 100%; overflow-y: auto ; border-left: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5;">
+      <table class="vue-table" style="white-space: nowrap;">
         <tbody>
         <tr>
           <th>Сотрудники</th>
@@ -10,14 +10,20 @@
               style="border-left: 1px solid #e5e5e5; border-right: 1px solid #e5e5e5; min-width: 45px">{{item}}
           </th>
           <th>Наличие прогонов</th>
-        </tr><!-- Table Header -->
+        </tr>
 
         <tr v-for="(el, index) in data0" :key="index">
           <td rowspan="2" v-if="index/2 == parseInt(index/2)">{{el.staffName}}</td>
 
-          <td v-for="item in daysInMonth" :key="item">{{item}}</td>
+          <td v-for="item in daysInMonth" :key="item" style="border-left: 1px solid #e5e5e5;">{{item}}</td>
           <td>{{el.sum}}</td>
-        </tr><!-- Table Row -->
+        </tr>
+        <tr v-for="(el, index) in tableData" :key="index" style="background: lightgoldenrodyellow">
+          <td rowspan="2">{{el.name}}</td>
+
+          <td v-for="item in daysInMonth" :key="item" style="border-left: 1px solid #e5e5e5;">{{el.days[0].daySimple==item?el.days[0].dayHours:''}}</td>
+          <td>{{el.days.daySimple == el.allHours?el.days.dayHours:''}}</td>
+        </tr>
 
         </tbody>
       </table>
@@ -32,13 +38,18 @@
     name: "VueTable",
     data() {
       return {
+        tableData: [],
         data0: [
           {staffName: 'Иванов Иван Иванович1', days: [1, 2, 12], sum: ' Итог 12'},
           {staffName: 'Петров Петр Михайлович2', days: [5, 7, 8], sum: ' Итог 188'},
           {staffName: 'Иванов Иван Иванович3', days: [1, 2, 12], sum: ' Итог 12'},
-          {staffName: 'Петров Петр Михайлович4', days: [5, 7, 8], sum: ' Итог 188'}
+          {staffName: 'Петров Петр Михайлович4', days: [5, 7, 8], sum: ' Итог 188'},
+          {staffName: 'Иванов Иван Иванович5', days: [1, 2, 12], sum: ' Итог 12'},
+          {staffName: 'Петров Петр Михайлович6', days: [5, 7, 8], sum: ' Итог 188'},
+          {staffName: 'Иванов Иван Иванович7', days: [1, 2, 12], sum: ' Итог 12'},
+          {staffName: 'Петров Петр Михайлович8', days: [5, 7, 8], sum: ' Итог 188'}
         ],
-        data: [{
+        data_question: [{
           "BaseDTO{id=4650}": {
             "allNightHoursMain": 0.0,
             "allNightHoursConc": 2.0,
@@ -199,14 +210,29 @@
         return [0, ...Array.from(Array(days).keys(), x => x + 1)].pop()
       }
     },
-    // methods: {
-    //   getDaysInMonth: function () {
-    //     let days = (33 - new Date(new Date().getFullYear(), new Date().getMonth(), 33).getDate())
-    //     return
-    //   }
-    // },
     mounted() {
-      console.log("...222... daysInMonth=", this.daysInMonth)
+      window.DDD = this.data_question;
+
+      this.data_question.map(el => {
+        console.log("...... el=", el)
+        let node = el[Object.keys(el)];
+
+        let days = [];
+        node.dailyInfo.map(item => {
+          item.daySimple = new Date(item.day).getDay()
+          days.push(item);
+        });
+
+        let datasOneEmployee = {
+          name: node.dataForChange[0].staffPostDTO.employee.name,
+          allHours: node.allHoursConc,
+          days: days
+        };
+        console.log("...... datasOneEmployee=", datasOneEmployee)
+        this.tableData.push(datasOneEmployee)
+      })
+
+
     }
   }
 </script>
@@ -275,18 +301,22 @@
   .vue-table tr td {
     padding: 8px;
     border-top: 1px solid #ffffff;
-    border-bottom: 1px solid #e0e0e0;
-    border-left: 1px solid #e0e0e0;
+    border-bottom: 1px solid #eee;
+    border-left: 1px solid #eee;
 
     background: #fafafa;
     background: -webkit-gradient(linear, left top, left bottom, from(#fbfbfb), to(#fafafa));
     background: -moz-linear-gradient(top, #fbfbfb, #fafafa);
   }
 
-  .vue-table tr:nth-child(even) td {
+  .vue-table tr:nth-of-type(4n) td, tr:nth-of-type(4n+5) td {
     background: #f6f6f6;
     background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f6f6f6));
     background: -moz-linear-gradient(top, #f8f8f8, #f6f6f6);
+  }
+
+  .vue-table tr:nth-of-type(2n+4) td {
+    border-top: 2px solid #eee;
   }
 
   .vue-table tr:last-child td {
