@@ -31,10 +31,11 @@ module.exports = {
     "space-before-function-paren": 0,
     "quotes": 0, //отключаем проверку на двойные или одинарные ковычки
     "indent": 0, // отключаем требованние отступа в коде
-    "no-multiple-empty-lines":0,
+    "no-multiple-empty-lines": 0,
     "padded-blocks": 0, // придирки к пустым местам
     "new-cap": 0, // придирается, что метоод не начинается с большой буквы
     "no-async-in-computed-properties": 0,
-    "comma-dangle": 0
+    "comma-dangle": 0,
+    "no-return-assign": 0 // не всегда требуется возвращать ответ со стрелочной функции
   }
 }
