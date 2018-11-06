@@ -12,17 +12,20 @@
           <th>Наличие прогонов</th>
         </tr>
 
-        <tr v-for="(el, index) in data0" :key="index">
-          <td rowspan="2" v-if="index/2 == parseInt(index/2)">{{el.staffName}}</td>
+        <!--<tr v-for="(el, index) in data0" :key="index">-->
+        <!--<td rowspan="2" v-if="index/2 == parseInt(index/2)">{{el.staffName}}</td>-->
 
-          <td v-for="item in daysInMonth" :key="item" style="border-left: 1px solid #e5e5e5;">{{item}}</td>
-          <td>{{el.sum}}</td>
-        </tr>
+        <!--<td v-for="item in daysInMonth" :key="item" style="border-left: 1px solid #e5e5e5;">{{item}}</td>-->
+        <!--<td>{{el.sum}}</td>-->
+        <!--</tr>-->
+
         <tr v-for="(el, index) in tableData" :key="index" style="background: lightgoldenrodyellow">
-          <td rowspan="2">{{el.name}}</td>
+          <td rowspan="2" v-if="index/2 == parseInt(index/2)">{{el.name}}</td>
 
-          <td v-for="item in daysInMonth" :key="item" style="border-left: 1px solid #e5e5e5;">{{el.days[0].daySimple==item?el.days[0].dayHours:''}}</td>
-          <td>{{el.days.daySimple == el.allHours?el.days.dayHours:''}}</td>
+          <td v-for="(item, index2) in daysInMonth" :key="index2"  style="border-left: 1px solid #e5e5e5;">
+            {{el.days[0].daySimple==item?el.days[0].dayHours:''}}
+          </td>
+          <td>{{el.days.daySimple == el.allHours?el.days.dayHours:''}}{{el.days[0]}}</td>
         </tr>
 
         </tbody>
@@ -205,7 +208,7 @@
       }
     },
     computed: {
-      daysInMonth: function () {
+      daysInMonth: function() {
         let days = (33 - new Date(new Date().getFullYear(), new Date().getMonth(), 33).getDate())
         return [0, ...Array.from(Array(days).keys(), x => x + 1)].pop()
       }
@@ -218,9 +221,10 @@
         let node = el[Object.keys(el)];
 
         let days = [];
+        let duas = [1, 2, 3, 4, 5, 6];
         node.dailyInfo.map(item => {
-          item.daySimple = new Date(item.day).getDay()
-          days.push(item);
+          let daySimple = new Date(item.day).getDay()
+          days.push(daySimple);
         });
 
         let datasOneEmployee = {
@@ -229,7 +233,20 @@
           days: days
         };
         console.log("...... datasOneEmployee=", datasOneEmployee)
-        this.tableData.push(datasOneEmployee)
+        duas.map(dua => {
+
+          // if (dua / 2 == parseInt(dua / 2)) {
+          //   console.log("dua=", dua)
+          //   datasOneEmployee.name = '';
+          // }
+          let newDatasOneEmployee = Object.assign({},datasOneEmployee);
+
+          newDatasOneEmployee.days=
+
+          this.tableData.push(datasOneEmployee)
+          console.log("this.tableData=", this.tableData)
+        })
+
       })
 
 
@@ -292,11 +309,11 @@
     padding-left: 20px;
   }
 
-  .vue-table tr td:first-child {
-    text-align: left;
-    padding-left: 20px;
-    border-left: 0;
-  }
+  /*.vue-table tr td:first-child {*/
+  /*text-align: left;*/
+  /*padding-left: 20px;*/
+  /*border-left: 0;*/
+  /*}*/
 
   .vue-table tr td {
     padding: 8px;
