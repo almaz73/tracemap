@@ -2,8 +2,8 @@
   <div>
     <div style="display: none">{{changeTile}}</div>
     <div id="map"></div>
-    <div id='delete' v-show="showButtons">Удалить</div>
-    <a href='#' id='export' v-show="showButtons">Сохранить</a>
+    <button id='delete' v-show="showButtons">Удалить</button>
+    <button href='#' id='export' v-show="showButtons">Сохранить</button>
   </div>
 </template>
 
@@ -225,6 +225,10 @@
 
   #delete:hover, #export:hover {
     background: #f2f2f2;
+  }
+
+  button#delete, button#export {
+    width: 90px;
   }
 
   .leaflet-popup-content-wrapper {

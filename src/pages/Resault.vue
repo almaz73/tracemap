@@ -10,7 +10,6 @@
     <!--<div style="background: orange; z-index: 100">{{$store.state.notifications}}</div>-->
     <!--<div style="background: orange; position: absolute; z-index: 100; opacity: 0.5">...{{$store.getters.notifications[0]}}</div>-->
 
-    <Questions v-if="this.$root.username"/>
     <Map :tile="tile"/>
     <PlusSearch/>
     <Tools v-if="$store.state.isShowTool" :showLayers="objectLayers.length>0"
@@ -38,7 +37,6 @@
   import IntegrationBrigadeHistory from "./IntegrationBrigadeHistory"
   import Notification from "../components/Notification";
 
-  import Questions from "../draft/Components/Questions"
   import BrigadeWayHistory from "../components/combobox/BrigadeWayHistory";
   import Legend from "../components/Legend";
   import ModalChoiseDate from "../components/combobox/ModalChoiseDate";
@@ -58,8 +56,7 @@
       Zones,
       Brigades,
       cCarCombobox,
-      Notification,
-      Questions
+      Notification
     },
     data() {
       return {

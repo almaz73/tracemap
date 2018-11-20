@@ -75,9 +75,9 @@
        * @type {String}
        * @default
        */
-      tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press ALT-key and click to <b>delete point</b>',
-      tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
-      tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
+      tooltipTextDraganddelete: 'Нажмите и перетащите <br><b>чтобы переместить точку</b>',
+      tooltipTextResume: ' ',
+      tooltipTextAdd: ' ',
 
       /**
        * Title for the control going to be switched on
@@ -150,8 +150,8 @@
        * @default
        */
       unitControlLabel: {
-        metres: 'm',
-        kilometres: 'km',
+        metres: 'м',
+        kilometres: 'км',
         feet: 'ft',
         landmiles: 'mi',
         nauticalmiles: 'nm'

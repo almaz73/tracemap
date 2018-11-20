@@ -13,7 +13,6 @@
               <v-menu
                 ref="menu1"
                 :close-on-content-click="false"
-                v-model="menu1"
                 :nudge-right="40"
                 lazy
                 transition="scale-transition"
@@ -133,7 +132,7 @@
 
 <script>
   export default {
-    name: "BrigadeWayHistory1",
+    name: "BrigadeWayHistory",
     data: vm => ({
       date: new Date().toISOString().substr(0, 10),
       dateFormatted: vm.formatDate(new Date().toISOString().substr(0, 10)),

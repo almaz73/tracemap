@@ -1,5 +1,5 @@
 <template>
-  <div class="root">
+  <div class="rootb">
     <div class="cbox head">+ Добавить TC</div>
     <div class="cbox head">+ Добавить группу</div>
     <hr width="90%"/>
@@ -164,7 +164,7 @@
 </script>
 
 <style scoped>
-  .root {
+  .rootb {
     z-index: 10;
     position: absolute;
     top: 156px;
@@ -254,8 +254,8 @@
 
   /* Style the checkmark/indicator */
   .cbox .checkmark:after {
-    left: 5px;
-    top: 2px;
+    left: 7px;
+    top: 3px;
     width: 5px;
     height: 8px;
     border: solid white;

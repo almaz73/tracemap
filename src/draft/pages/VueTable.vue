@@ -22,7 +22,7 @@
         <tr v-for="(el, index) in tableData" :key="index" style="background: lightgoldenrodyellow">
           <td rowspan="2" v-if="index/2 == parseInt(index/2)">{{el.name}}</td>
 
-          <td v-for="(item, index2) in daysInMonth" :key="index2"  style="border-left: 1px solid #e5e5e5;">
+          <td v-for="(item, index2) in daysInMonth" :key="index2" style="border-left: 1px solid #e5e5e5;">
             {{el.days[0].daySimple==item?el.days[0].dayHours:''}}
           </td>
           <td>{{el.days.daySimple == el.allHours?el.days.dayHours:''}}{{el.days[0]}}</td>
@@ -208,7 +208,7 @@
       }
     },
     computed: {
-      daysInMonth: function() {
+      daysInMonth: function () {
         let days = (33 - new Date(new Date().getFullYear(), new Date().getMonth(), 33).getDate())
         return [0, ...Array.from(Array(days).keys(), x => x + 1)].pop()
       }
@@ -239,9 +239,9 @@
           //   console.log("dua=", dua)
           //   datasOneEmployee.name = '';
           // }
-          let newDatasOneEmployee = Object.assign({},datasOneEmployee);
+          // let newDatasOneEmployee = Object.assign({},datasOneEmployee);
 
-          newDatasOneEmployee.days=
+          // newDatasOneEmployee.days=
 
           this.tableData.push(datasOneEmployee)
           console.log("this.tableData=", this.tableData)

@@ -5,25 +5,25 @@
       <img v-else src="../../assets/images/edit/line.png"/>
     </span>
 
-    <span @click="onSelect('objectLayers')" v-if="showObjectLayers">
+    <span @click="onSelect('objectLayers')" v-if="showObjectLayers && readyForProduct">
       <img v-if="!isObjectLayers" src="../../assets/images/edit/layers_gray.png"/>
       <img v-else src="../../assets/images/edit/layers.png"/>
     </span>
 
-    <span @click="onSelect('square')">
+    <span @click="onSelect('square')" v-if="readyForProduct && readyForProduct">
       <img v-if="!isSquare" src="../../assets/images/edit/square_gray.png"/>
       <img v-else src="../../assets/images/edit/square.png"/>
     </span>
 
-    <span @click="onSelect('car')" v-if="showCars && isModeDevelop">
+    <span @click="onSelect('car')" v-if="showCars && readyForProduct">
       <img v-if="!isCar" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
-    <span @click="onSelect('car2')" v-if="isModeDevelop">
+    <span @click="onSelect('car2')" v-if="readyForProduct && false">
       <img v-if="!isCar2" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
-    <span @click="onSelect('brigadeHistory')" >
+    <span @click="onSelect('brigadeHistory')" v-if="readyForProduct">
       <img v-if="!isBrigadeHistory" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
@@ -35,7 +35,8 @@
     name: "Tools",
     data() {
       return {
-        isModeDevelop: this.$root.username === "1"
+        // если режим разхработки показываем все кнопки, и скрываем если еще не готов, нужно снять условие если готово
+        readyForProduct: document.location.hostname.includes('localhost') || false
       }
     },
     computed: {

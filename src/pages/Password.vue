@@ -1,5 +1,6 @@
 <template>
-  <div class="fon">
+  <div class="root">
+    <div class="active-fon"></div>
     <Notification/>
     <div class="autoriz">
       <h3>Авторизация</h3>
@@ -70,10 +71,15 @@
     margin-bottom: 20px;
   }
 
-  .fon {
+  .active-fon {
+    position: absolute;
+    background: url("../assets/images/autoriz/fonMap.jpg");
+    opacity: 0.2;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(to top, #fff, #ccc);
+    height: 100vh
+  }
+
+  .root {
     height: 100vh;
     align-items: center;
   }

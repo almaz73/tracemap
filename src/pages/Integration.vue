@@ -65,7 +65,7 @@
         statusBrigadeCoordinates: 0,
         isVisiblePopups: false,
         timer: 0,
-        isVisibleOnlineBrigades: false
+        isVisibleOnlineBrigades: true
       }
     },
     computed: {
@@ -404,7 +404,7 @@
     top: 20px;
     background: #FFFFFF;
     border-radius: 3px;
-    padding: 8px;
+    padding: 20px 10px;
     border: none;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.18);
     cursor: pointer;
