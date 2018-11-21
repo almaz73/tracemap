@@ -1,16 +1,17 @@
 <template>
   <div class="menuSearch">
-    <div
-      class="menu" :class="{opened: show}" @click="toShowTools()">{{show ? '+' : '...' }}
-    </div>
-    <input v-model="inputValue" :onchange="inputOnchange()" placeholder="search"/>
+    <div class="menu" :class="{opened: show}" @click="toShowTools()">{{show ? '+' : '...'}}</div>
+    <input v-model="inputValue" @keyup="onKeyUp()" placeholder="search"/>
     <br>
-    <div class="lines" :onclick="changedNewArea(place)" v-for="place in places" :key="place.y">{{place.label}}</div>
+    <div v-if="isShowPlaces" class="lines" @click="changedNewArea(place)" v-for="place in places" :key="place.y">
+      {{place.label}}
+    </div>
   </div>
 </template>
 
 <script>
   import {OpenStreetMapProvider} from 'leaflet-geosearch';
+  import application from '../../assets/js/application';
 
   export default {
     name: "PlusSearch",
@@ -18,8 +19,10 @@
       return {
         show: true,
         provider: new OpenStreetMapProvider(),
-        places:[],
-        inputValue: ''
+        places: [],
+        inputValue: '',
+        isShowPlaces: false,
+        provider: new OpenStreetMapProvider()
       }
     },
     methods: {
@@ -27,22 +30,20 @@
         this.show = !this.show;
         this.$store.dispatch('setShowTool', this.show)
       },
-      inputOnchange (){
-        console.log('...... this.inputValue=', this.inputValue)
-
-        this.provider.search({ query: this.inputValue})
+      onKeyUp() {
+        this.provider.search({query: this.inputValue})
           .then(
-            res =>{
+            res => {
               this.places = res;
-              console.log('...!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!... this.places=', this.places)
+              this.isShowPlaces = true
             },
-            err => console.log('...... err=', err)
-          )
-
-        console.log('...... this.placesthis.placesthis.places=', this.places)
+            err => console.error('...... err=', err)
+          );
       },
-      changedNewArea(place){
-        console.log('...... place=', place)
+      changedNewArea(place) {
+        application.map.setView([place.x, place.y], 1);
+        application.map.fitBounds(place.bounds); // граница для масштабирования по массиву
+        this.isShowPlaces = false;
       }
     }
   }
@@ -78,14 +79,14 @@
     top: 0;
     background: #FFFFFF;
     border-radius: 3px;
-    width: 292px;
+    width: 305px;
     height: 24px;
     padding: 20px;
     border: none;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.18);
   }
 
-  .lines{
+  .lines {
     background: white;
     padding: 5px;
     margin-top: 0px;
@@ -94,7 +95,8 @@
     min-width: 375px;
     cursor: pointer;
   }
-  .lines:hover{
+
+  .lines:hover {
     background: #f5f5f5;
   }
 
