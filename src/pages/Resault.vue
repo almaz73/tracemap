@@ -1,6 +1,5 @@
 <template>
   <div>
-    <ModalChoiseDate v-if="isBrigadeWayHistory" @close="isBrigadeWayHistory=false"/>
     <Notification/>
 
     <!--<div style="background: orange; z-index: 100">{{this.$root.username}}</div>-->
@@ -20,7 +19,6 @@
     <Integration @setTile="setTile"/>
     <IntegrationZones @setLayer="setLayer"/>
     <IntegrationBrigadeHistory @setCars="setCars"/>
-    <BrigadeWayHistory v-if="isBrigadeHistory"/>
   </div>
 </template>
 
@@ -37,16 +35,12 @@
   import IntegrationBrigadeHistory from "./IntegrationBrigadeHistory"
   import Notification from "../components/Notification";
 
-  import BrigadeWayHistory from "../components/combobox/BrigadeWayHistory";
   import Legend from "../components/Legend";
-  import ModalChoiseDate from "../components/combobox/ModalChoiseDate";
 
   export default {
     name: "Resault",
     components: {
-      ModalChoiseDate,
       Legend,
-      BrigadeWayHistory,
       IntegrationBrigadeHistory,
       IntegrationZones,
       Integration,
@@ -63,7 +57,6 @@
         objectLayers: [],
         tile: null,
         cars: [],
-        isBrigadeWayHistory: false
       }
     },
     computed: {
@@ -81,11 +74,6 @@
         return this.$store.getters.tools.find(el => {
           return el.tool === 'car2' && el.val === true
         });
-      },
-      isBrigadeHistory() {
-        return this.$store.getters.tools.find(el => {
-          return el.tool === 'brigadeHistory' && el.val === true
-        });
       }
     },
     methods: {
@@ -98,12 +86,6 @@
       setCars(val) {
         this.cars = val;
       }
-    },
-    mounted() {
-      this.$root.$on('showBrigadeWayHistory', id => {
-        this.isBrigadeWayHistory = !this.isBrigadeWayHistory;
-      })
-
     }
   }
 </script>

@@ -5,26 +5,22 @@
       <img v-else src="../../assets/images/edit/line.png"/>
     </span>
 
-    <span @click="onSelect('objectLayers')" v-if="showObjectLayers && readyForProduct">
+    <span @click="onSelect('objectLayers')" v-if="showObjectLayers">
       <img v-if="!isObjectLayers" src="../../assets/images/edit/layers_gray.png"/>
       <img v-else src="../../assets/images/edit/layers.png"/>
     </span>
 
-    <span @click="onSelect('square')" v-if="readyForProduct && readyForProduct">
+    <span @click="onSelect('square')" v-if="readyForProduct && readyForProduct && false">
       <img v-if="!isSquare" src="../../assets/images/edit/square_gray.png"/>
       <img v-else src="../../assets/images/edit/square.png"/>
     </span>
 
-    <span @click="onSelect('car')" v-if="showCars && readyForProduct">
+    <span @click="onSelect('car')" v-if="showCars">
       <img v-if="!isCar" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
     <span @click="onSelect('car2')" v-if="readyForProduct && false">
       <img v-if="!isCar2" src="../../assets/images/edit/car_gray.png"/>
-      <img v-else src="../../assets/images/edit/car.png"/>
-    </span>
-    <span @click="onSelect('brigadeHistory')" v-if="readyForProduct">
-      <img v-if="!isBrigadeHistory" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
   </div>
@@ -36,7 +32,7 @@
     data() {
       return {
         // если режим разхработки показываем все кнопки, и скрываем если еще не готов, нужно снять условие если готово
-        readyForProduct: document.location.hostname.includes('localhost') || false
+        readyForProduct: document.location.href.includes('localhost:8080') || false
       }
     },
     computed: {
@@ -54,9 +50,6 @@
       },
       isCar2: function () {
         return this.$store.getters.tools.find(el => el.tool === 'car2' && el.val === true)
-      },
-      isBrigadeHistory: function () {
-        return this.$store.getters.tools.find(el => el.tool === 'brigadeHistory' && el.val === true)
       }
     },
     props: {

@@ -38,6 +38,7 @@
 
 <style>
   @import "leaflet/dist/leaflet.css";
+
   @font-face {
     font-family: Roboto Condensed;
     src: url(../src/assets/fonts/Roboto-Regular.ttf);
@@ -78,5 +79,14 @@
   .leaflet-bar {
     border: none !important;
   }
+
+  .leaflet-popup-content-wrapper {
+    background-color: cornsilk !important;
+  }
+
+  .leaflet-popup-tip {
+    background: cornsilk;
+  }
+
   /* end стилизация кнопки масшталирования карты*/
 </style>

@@ -1,12 +1,10 @@
 <template>
   <div class="rootb">
-    <div class="cbox head">+ Добавить TC</div>
-    <div class="cbox head">+ Добавить группу</div>
-    <hr width="90%"/>
     <div class="combo">
       <label class="cbox " v-for="(el, index) in objectLayers" :key="index" @click="showElement(el)">
-        <input type="checkbox" @click.stop="" :checked="check(el.id)">
-        <span class="checkmark"></span>
+        <div class="div-checkbox" :class="{'checked':check(el.id)}">
+          <div class="like"/>
+        </div>
         <span class="triangle" v-if="el.children && el.children.length" @click.stop="showLevel(el.id)">
         <div :class="{'block0' : !check('#L'+el.id), 'block': check('#L'+el.id)}"></div>
       </span>
@@ -19,8 +17,9 @@
           :key="index2"
           @click.stop="showElement(el2)"
         >
-          <input type="checkbox" @click.stop="" :checked="check(el2.id)">
-          <span class="checkmark"></span>
+          <div class="div-checkbox" :class="{'checked':check(el2.id)}">
+            <div class="like"/>
+          </div>
           <span class="triangle" v-if="el2.children && el2.children.length" @click.stop="showLevel(el2.id)">
           <div :class="{'block0' : !check('#L'+el2.id), 'block': check('#L'+el2.id)}"></div>
         </span>
@@ -33,8 +32,9 @@
             :key="index3"
             @click.stop="showElement(el3)"
           >
-            <input type="checkbox" @click.stop="" :checked="check(el3.id)">
-            <span class="checkmark"></span>
+            <div class="div-checkbox" :class="{'checked':check(el3.id)}">
+              <div class="like"/>
+            </div>
             <span class="triangle" v-if="el3.children && el3.children.length" @click.stop="showLevel(el3.id)">
             <div :class="{'block0' : !check('#L'+el3.id), 'block': check('#L'+el3.id)}"></div>
           </span>
@@ -47,8 +47,9 @@
               :key="index3"
               @click.stop="showElement(el4)"
             >
-              <input type="checkbox" @click.stop="" :checked="check(el4.id)">
-              <span class="checkmark"></span>
+              <div class="div-checkbox" :class="{'checked':check(el4.id)}">
+                <div class="like"/>
+              </div>
               <span class="text">{{el4.name}}</span>
             </label>
 
@@ -209,68 +210,48 @@
     margin-left: 15px;
   }
 
-  /* Hide the browser's default checkbox */
-  .cbox input {
+  .div-checkbox {
+    position: relative;
+    width: 19px;
+    height: 19px;
+    background: #eee;
+    display: inline-block;
+    margin: 3px -10px -3px -10px;
+  }
+
+  .div-checkbox.checked {
+    background: #2196f3;
+  }
+
+  .like {
     position: absolute;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  /* Create a custom checkbox */
-  .checkmark {
-    position: absolute;
-    top: 5px;
-    left: 8px;
-    height: 18px;
-    width: 18px;
-    background-color: #eee;
-  }
-
-  /* On mouse-over, add a grey background color */
-  .cbox:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-
-  /*.container:hover{*/
-  /*background: #f5f5f5;*/
-  /*}*/
-
-  /* When the checkbox is checked, add a blue background */
-  .cbox input:checked ~ .checkmark {
-    background-color: #2196F3;
-  }
-
-  /* Create the checkmark/indicator (hidden when not checked) */
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-
-  /* Show the checkmark when checked */
-  .cbox input:checked ~ .checkmark:after {
-    display: block;
-  }
-
-  /* Style the checkmark/indicator */
-  .cbox .checkmark:after {
-    left: 7px;
-    top: 3px;
-    width: 5px;
+    left: 6px;
+    top: 4px;
+    width: 7px;
     height: 8px;
-    border: solid white;
+    border: solid #eee;
     border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
     transform: rotate(45deg);
   }
+
+  .cbox:hover > .div-checkbox {
+    background: #ddd;
+  }
+
+  .cbox:hover > .div-checkbox.checked {
+    background: #1186e3;
+  }
+
+  .cbox:hover > .div-checkbox .like {
+    border-color: #ddd;
+  }
+
 
   .triangle {
     position: relative;
     margin-left: 8px;
     margin-right: -16px;
     padding: 0 7px;
-    /*background: blanchedalmond;*/
   }
 
   .block0 {

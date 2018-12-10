@@ -43,6 +43,7 @@
     methods: {
       onMapClick(e) {
         // показ координаты
+        this.$root.$emit('onMapClick', e);
         console.log('[' + e.latlng.lat + ', ' + e.latlng.lng + '],')
       },
       onMeasure() {
@@ -123,7 +124,15 @@
         showBearings: false,
         clearMeasurementsOnStop: false,
         showClearControl: false,
-        showUnitControl: false
+        showUnitControl: false,
+        tooltipTextDraganddelete: 'Нажмите и перетащите <br><b>чтобы переместить точку</b>',
+        tooltipTextResume: ' ',
+        tooltipTextAdd: ' ',
+        unitControlLabel: {
+          // Label symbols to show in the Unit Control button
+          metres: 'м',
+          kilometres: 'км'
+        },
       });
 
 

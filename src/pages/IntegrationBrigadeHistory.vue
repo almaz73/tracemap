@@ -2,6 +2,7 @@
   <div>
     <Wait v-if="wait"/>
     {{run}}
+    <MotionPanel @close="isMotionPanel = false" v-if="isMotionPanel" :historyData="historyData"/>
   </div>
 </template>
 
@@ -11,15 +12,20 @@
   import application from '../assets/js/application';
   import '../assets/js/movingMarker';
   import Wait from "../components/Wait";
+  import MotionPanel from '../components/MotionPanel';
+
+  let cash = {};
 
   export default {
     name: "IntegrationBrigadeHistory",
-    components: {Wait},
+    components: {Wait, MotionPanel},
     data() {
       return {
         points: [],
         oldBrigadeId: null,
-        wait: false
+        wait: false,
+        isMotionPanel: true,
+        historyData: {}
       }
     },
     computed: {
@@ -33,44 +39,52 @@
         await axios.get('/ambulance/telematics/available-automobiles')
           .then(
             req => this.$emit('setCars', req.data),
-            err => this.$store.dispatch('setNotification', err.response.data.message)
-          );
-      },
-      showCarTrace(id, bool) {
-        this.points = [];
-
-        // из сторе удаляем все ранее выбранные бригады
-        this.$store.getters.brigades.map(el => typeof el === 'number' && el !== id && this.$store.dispatch('setBrigade', el));
-
-        if (!bool) return;
-        this.wait = true;
-
-        setTimeout(() => this.getCarTrace(id), 1);
-      },
-      async getCarTrace(id) {
-        // todo нужен инструмент выбора времени просмотре
-        let today = new Date();
-        let yesterday = new Date();
-        // yesterday.setDate(yesterday.getDate() - 1);
-        let todayTxt = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + 'T10:09:12.000';
-        let yesterdayTxt = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate() + 'T08:08:02.000';
-        let examplePoints = [];
-        let that = this;
-
-        await axios.get(`/ambulance/telematics/history?automobileId=${id}&startDate=${yesterdayTxt}&endDate=${todayTxt}`)
-          .then(
-            resp => {
-              if (resp && resp.data.routes && resp.data.routes.length) resp.data.routes.map(el => el.coordinates.map(item => examplePoints.push(item.reverse())));
-              else that.$store.dispatch('setNotification', 'Нет данных по движению');
-            },
             err => {
-              that.$store.dispatch('setNotification', err.response.data.message)
+              this.$emit('setCars', [{stationName: '. . . нет данных . . . '}]);
+              this.$store.dispatch('setNotification', err.response.data.message)
             }
           );
+      },
+      showCarTrace(bool, item) {
+        this.points = [];
+        if (!bool) return;
+        this.wait = true;
+        setTimeout(() => this.getCarTrace(item), 1);
+      },
+      async getCarTrace(item) {
+
+        let examplePoints = [];
+        let that = this;
+        let letter = '/ambulance/telematics/history?automobileId=' + (item.automobileId || null);
+
+        if (item.ordersId) letter += '&ordersId=' + item.ordersId;
+        if (item.startDate) letter += '&startDate=' + item.startDate;
+        if (item.endDate) letter += '&endDate=' + item.endDate;
+
+        if (cash[letter]) doit(cash[letter]);
+        else {
+          await axios.get(letter)
+            .then(
+              resp => doit(resp),
+              err => that.$store.dispatch('setNotification', err.response.data.message)
+            )
+        }
+
+        function doit(resp) {
+          cash[letter] = resp;
+          if (resp && resp.data.routes && resp.data.routes.length) {
+            resp.data.routes.map(el => {
+              el.coordinates.map(item => {
+                examplePoints.push(item.reverse())
+              })
+            });
+          } else that.$store.dispatch('setNotification', 'Нет данных по движению');
+        }
 
         this.wait = false;
-        this.points = examplePoints;
-
+        this.points = examplePoints; // наверно потом уберу  points
+        this.historyData = examplePoints; //
+      console.log('...... this.historyData =', this.historyData )
       },
       showPathBefore() {
         setTimeout(() => this.showPath(), 1);

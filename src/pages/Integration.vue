@@ -1,7 +1,8 @@
 <template>
   <div>
-    <div class="triggerShowButton" @click="switchPopups()"></div>
-    <div class="triggerShowButton online" @click="triggerOnline()"></div>
+    <div class="triggerShowButton online" @click="triggerOnline()"
+         :style="{'opacity':isVisibleOnlineBrigades?1:0.5}"></div>
+    <div class="triggerShowButton" @click="switchPopups()" :style="{'opacity':isVisiblePopups?1:0.5}"></div>
     <div class="integration" v-if="statusBar">
       <router-link to="/password">Autorization:</router-link>
       <span style="color: green" v-if="isSocket">Websocket : connected</span>
@@ -86,6 +87,9 @@
           stomp.setStompClient("/user/topic/brigade/current", this.addedNewrigades);
         } else {
           console.log("Websocket error: ", error)
+
+          // через десять секунд пробуем заново подключиться
+          // if (error.type === 'close') setTimeout(() => stomp.connect(this.isSocketConnected), 10000);
         }
       },
       addedNewCalls(tick) {
@@ -172,7 +176,7 @@
 
         // markersDeferred.promise.then(() => {
         // находим бригаду по совпадению номера автомобиля
-        // const brigadeMarker = brigadeMarkersMap[brigadeQueueToFocus.brigadeId]; // <= надо будет подождать пока данные придут
+        // const brigadeMarker = brigadeMarkersMap[brigadeQueueToFocus.ordersId]; // <= надо будет подождать пока данные придут
 
         // if (brigadeMarker) application.map.setView(brigadeMarker._latlng, 17);
         // else console.log('Не удалось определить местонахождение бригады ' + brigadeQueueToFocus.brigade); // todo
@@ -234,9 +238,9 @@
         let hours = controlTime ? ('00' + controlTime.getHours()).slice(-2) : null;
         let minutes = controlTime ? ('00' + controlTime.getMinutes()).slice(-2) : null;
 
-        if (brigadeMarkersMap[marker.id]) {
+        if (brigadeMarkersMap[marker.ordersId]) {
 
-          oldMarker = brigadeMarkersMap[marker.id];
+          oldMarker = brigadeMarkersMap[marker.ordersId];
 
           if (oldMarker.code !== marker.code) {
             oldMarker.setIcon(icon);
@@ -270,7 +274,7 @@
             oldMarker.openPopup();
           }
 
-          brigadeMarkersMap[marker.id] = oldMarker;
+          brigadeMarkersMap[marker.ordersId] = oldMarker;
         }
       },
       switchPopups() {
@@ -281,8 +285,8 @@
           call.openPopup && call[this.isVisiblePopups ? 'openPopup' : 'closePopup']();
         }
 
-        for (let brigadeId in brigadeMarkersMap) {
-          let brigade = brigadeMarkersMap[brigadeId];
+        for (let ordersId in brigadeMarkersMap) {
+          let brigade = brigadeMarkersMap[ordersId];
 
           brigade.openPopup && brigade[this.isVisiblePopups ? 'openPopup' : 'closePopup']();
         }
@@ -324,10 +328,10 @@
         const response = await axios.get('/ambulance/telematics/brigades', {validateStatus: status => this.statusBrigadeCoordinates = status});
         if (response.status === 200) {
           response.data.map(brigadeGeodata => {
-            let brigadeId = brigadeGeodata.brigadeId;
-            if (brigadeId) {
-              let brigade = brigadeQueue.find(function (brigade) {
-                return brigade.brigadeId === brigadeId;
+            let ordersId = brigadeGeodata.ordersId;
+            if (ordersId) {
+              let brigade = brigadeQueue.find(function (bq) {
+                return bq.orderId === ordersId;
               });
               if (brigade) {
                 brigadeGeodata.code = brigade.statusCode;
@@ -336,10 +340,10 @@
                 this.addWfstMarker(brigadeGeodata);
               } else {
                 // Удаляем старую бригаду, если она была
-                const oldMarker = brigadeMarkersMap[brigadeId];
+                const oldMarker = brigadeMarkersMap[ordersId];
                 if (oldMarker) {
                   application.map.removeLayer(oldMarker);
-                  delete brigadeMarkersMap[brigadeId];
+                  delete brigadeMarkersMap[ordersId];
                 }
               }
               this.smootHRunningMarkers(true);
@@ -400,18 +404,18 @@
     height: 24px;
     width: 4px;
     z-index: 100;
-    left: 387px;
+    left: 360px;
     top: 20px;
     background: #FFFFFF;
     border-radius: 3px;
-    padding: 20px 10px;
+    padding: 20px 7px;
     border: none;
     box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.18);
     cursor: pointer;
   }
 
   .triggerShowButton.online {
-    left: 417px;
+    left: 343px;
   }
 
 </style>

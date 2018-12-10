@@ -3,15 +3,15 @@
     <div class="menu" :class="{opened: show}" @click="toShowTools()">{{show ? '+' : '...'}}</div>
     <input v-model="inputValue" @keyup="onKeyUp()" placeholder="search"/>
     <br>
-    <div v-if="isShowPlaces" class="lines" @click="setPlace(place.guid)" v-for="place in places.data" :key="place.y">
-      {{place.fullname}}
+    <div v-if="isShowPlaces" class="lines" @click="changedNewArea(place)" v-for="place in places" :key="place.y">
+      {{place.label}}
     </div>
   </div>
 </template>
 
 <script>
+  import {OpenStreetMapProvider} from 'leaflet-geosearch';
   import application from '../../assets/js/application';
-  import * as axios from 'axios';
 
   export default {
     name: "PlusSearch",
@@ -21,6 +21,7 @@
         places: [],
         inputValue: '',
         isShowPlaces: false,
+        provider: new OpenStreetMapProvider()
       }
     },
     methods: {
@@ -28,13 +29,19 @@
         this.show = !this.show;
         this.$store.dispatch('setShowTool', this.show)
       },
-      async onKeyUp() {
-        this.isShowPlaces = true;
-        this.places = await axios.get('/ambulance/places/search?contains=' + this.inputValue);
+      onKeyUp() {
+        this.provider.search({query: this.inputValue})
+          .then(
+            res => {
+              this.places = res;
+              this.isShowPlaces = true
+            },
+            err => console.error('...... err=', err)
+          );
       },
-      async setPlace(guid) {
-        let place = await axios.get('/ambulance/places/coordinates/' + guid);
-        application.map.setView([place.data.latitude, place.data.longitude], 14);
+      changedNewArea(place) {
+        application.map.setView([place.x, place.y], 1);
+        application.map.fitBounds(place.bounds); // граница для масштабирования по массиву
         this.isShowPlaces = false;
       }
     }
@@ -71,7 +78,7 @@
     top: 0;
     background: #FFFFFF;
     border-radius: 3px;
-    width: 270px;
+    width: 305px;
     height: 24px;
     padding: 20px;
     border: none;

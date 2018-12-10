@@ -1,7 +1,9 @@
+// https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js
+// https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css
 /*********************************************************
  **                                                      **
  **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
- **       Version: 2018-08-10                            **
+ **       Version: 2018-10-22                            **
  **                                                      **
  *********************************************************/
 
@@ -75,9 +77,9 @@
        * @type {String}
        * @default
        */
-      tooltipTextDraganddelete: 'Нажмите и перетащите <br><b>чтобы переместить точку</b>',
-      tooltipTextResume: ' ',
-      tooltipTextAdd: ' ',
+      tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press SHIFT-key and click to <b>delete point</b>',
+      tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
+      tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
 
       /**
        * Title for the control going to be switched on
@@ -150,8 +152,8 @@
        * @default
        */
       unitControlLabel: {
-        metres: 'м',
-        kilometres: 'км',
+        metres: 'm',
+        kilometres: 'km',
         feet: 'ft',
         landmiles: 'mi',
         nauticalmiles: 'nm'
@@ -367,6 +369,11 @@
      * @returns {Element}           Containing element
      */
     onAdd: function(map) {
+      var self = this
+      // needed to avoid creating points by mouseclick during dragging the map
+      map.on('movestart ', function() {
+        self._mapdragging = true
+      })
       this._container = document.createElement('div');
       this._container.classList.add('leaflet-bar');
       L.DomEvent.disableClickPropagation(this._container); // otherwise drawing process would instantly start at controls' container or double click would zoom-in map
@@ -419,6 +426,22 @@
       }
     },
 
+    // turn off all Leaflet-own events of markers (popups, tooltips). Needed to allow creating points on top of markers
+    _blockEvents: function () {
+      if (!this._oldTargets) {
+        this._oldTargets = this._map._targets;
+        this._map._targets = {};
+      }
+    },
+
+    // on disabling the measure add-on, enable the former Leaflet-own events again
+    _unblockEvents: function () {
+      if (this._oldTargets) {
+        this._map._targets = this._oldTargets;
+        delete this._oldTargets;
+      }
+    },
+
     /**
      * Toggle the measure functionality on or off
      * @private
@@ -426,6 +449,8 @@
     _toggleMeasure: function () {
       this._measuring = !this._measuring;
       if (this._measuring) {   // if measuring is going to be switched on
+        this._mapdragging = false;
+        this._blockEvents();
         this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
         this._measureControl.style.backgroundColor = this.options.backgroundColor;
         this._measureControl.title = this.options.measureControlTitleOff;
@@ -442,6 +467,7 @@
         L.DomEvent.on (document, 'keydown', this._onKeyDown, this);
         this._resetPathVariables();
       } else {   // if measuring is going to be switched off
+        this._unblockEvents();
         this._measureControl.classList.remove ('polyline-measure-controlOnBgColor');
         this._measureControl.style.backgroundColor = this._defaultControlBgColor;
         this._measureControl.title = this.options.measureControlTitleOn;
@@ -512,8 +538,8 @@
     _onKeyDown: function (e) {
       if (e.keyCode === 27) {
         // if resuming a line at its first point is active
-        if (resumeFirstpointFlag === true) {
-          resumeFirstpointFlag = false;
+        if (this._resumeFirstpointFlag === true) {
+          this._resumeFirstpointFlag = false;
           this._map.off ('mousemove', this._resumeFirstpointMousemove, this);
           this._map.off ('click', this._resumeFirstpointClick, this);
           this._layerPaint.removeLayer (this._rubberlinePath2);
@@ -862,6 +888,7 @@
           } else {
             // if there is only one point, just clean it up
             polylineState._layerPaint.removeLayer (this.circleMarkers.last());
+            polylineState._layerPaint.removeLayer (this.tooltips.last());
           }
           polylineState._resetPathVariables();
         }
@@ -896,10 +923,15 @@
       if (!e.latlng || (this._finishCircleScreencoords && this._finishCircleScreencoords.equals(e.containerPoint))) {
         return;
       }
-      if (!this._currentLine) {
+      if (!this._currentLine && !this._mapdragging) {
         this._startLine (e.latlng);
       }
-      this._currentLine.addPoint (e.latlng);
+      // just create a point if the map isn't dragged during the mouseclick.
+      if (!this._mapdragging) {
+        this._currentLine.addPoint (e.latlng);
+      } else {
+        this._mapdragging = false; // this manual setting to "false" needed, instead of a "moveend"-Event. Cause the mouseclick of a "moveend"-event immediately would create a point too the same time.
+      }
     },
 
     /**
@@ -1088,7 +1120,7 @@
     },
 
     _resumeFirstpointClick: function (e) {
-      resumeFirstpointFlag = false;
+      this._resumeFirstpointFlag = false;
       this._map.off ('mousemove', this._resumeFirstpointMousemove, this);
       this._map.off ('click', this._resumeFirstpointClick, this);
       this._layerPaint.removeLayer (this._rubberlinePath2);
@@ -1125,7 +1157,7 @@
         this._map.off ('click', this._mouseClick, this); // to avoid unwanted creation of a new line if CTRL-clicked onto a point
         // if user wants resume the line at its starting point
         if (e1.target.cntCircle === 0) {
-          resumeFirstpointFlag = true;
+          this._resumeFirstpointFlag = true;
           lineNr = e1.target.cntLine;
           circleNr = e1.target.cntCircle;
           currentCircleCoords = e1.latlng;
@@ -1159,7 +1191,7 @@
       }
 
       // if user wants to delete a circle
-      if (e1.originalEvent.altKey) {
+      if (e1.originalEvent.shiftKey) {    // it's not possible to use "ALT-Key" instead, cause this won't work in some Linux distributions (there it's the default hotkey for moving windows)
         lineNr = e1.target.cntLine;
         circleNr = e1.target.cntCircle;
         this._arrPolylines[lineNr].circleCoords.splice(circleNr,1);
@@ -1175,6 +1207,7 @@
         if (circleNr === 0) {
           this._arrPolylines[lineNr].circleMarkers [0].setStyle (this.options.startCircle);
           lineCoords.splice (0, arcpoints-1)
+          this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
           this._arrPolylines[lineNr].arrowMarkers [circleNr].removeFrom (this._layerPaint);
           this._arrPolylines[lineNr].arrowMarkers.splice(0,1);
           text='';
@@ -1186,6 +1219,8 @@
           this._arrPolylines[lineNr].tooltips [0]._icon.innerHTML = text;
           // if last Circle is being removed
         } else if (circleNr === this._arrPolylines[lineNr].circleCoords.length) {
+          this._arrPolylines[lineNr].circleMarkers [circleNr-1].on ('click', this._resumePolylinePath, this);
+          this._arrPolylines[lineNr].circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
           this._arrPolylines[lineNr].circleMarkers.slice(-1)[0].setStyle (this.options.endCircle);  // get last element of the array
           this._arrPolylines[lineNr].tooltips.slice(-1)[0]._icon.classList.add('polyline-measure-tooltip-end');
           lineCoords.splice (-(arcpoints-1), arcpoints-1)
@@ -1233,7 +1268,7 @@
     }
   });
 
-// ======================================================================================
+//======================================================================================
 
   L.Map.mergeOptions({
     PolylineMeasureControl: false

@@ -1,84 +1,99 @@
 <template>
-  <div class="root">
+  <div @mouseleave="mouseLeave">
+    <BrigadesPanel :menu="menu" @openPanel="openPanel"/>
+    <BrigadesHistory :historyPanelParams="historyPanelParams"/>
 
-    <!--<div class="container head">+ Добавить TC</div>-->
-
-    <!--<div class="container head">+ Добавить группу</div>-->
-    <!--<hr width="90%"/>-->
-
-    <label v-for="(el, k) in layers" :key="k" class="cbox">
+    <div class="root">
+      <label v-for="(el, k) in layers" :key="k" class="cbox">
       <span class="text" :class="{full: isFull(el), mark: true}" @click.stop="twoFunction(el)">
         {{el.stationName}}
       </span>
-      <span v-if="isChildren(el)" class="triangle">
+        <span v-if="isChildren(el)" class="triangle">
         <div :class="traingleClass(el)" @click.stop="twoFunction(el)"></div></span>
 
-      <label class="cbox" v-if="check('~|'+el.id)" v-for="(el2, k2) in el.children" :key="k2">
+        <label class="cbox" v-if="check('~|'+el.id)" v-for="(el2, k2) in el.children" :key="k2">
         <span class="text" :class="{full: isFull(el2)}" @click.stop="twoFunction(el2)">
           {{el2.stationName}}
         </span>
-        <span v-if="isChildren(el2)" class="triangle">
+          <span v-if="isChildren(el2)" class="triangle">
           <div :class="traingleClass(el2)" @click.stop="twoFunction(el2)"></div></span>
 
-        <label v-if="check('~|'+el2.id)" class="cbox" v-for="(el3, k4) in el2.children" :key="k4+'-label'">
+          <label v-if="check('~|'+el2.id)" class="cbox" v-for="(el3, k4) in el2.children" :key="k4+'-label'">
           <span class="text" :class="{full: isFull(el3)}" @click.stop="twoFunction(el3)">
             {{el3.stationName}}
           </span>
-          <span v-if="isChildren(el3)" class="triangle">
+            <span v-if="isChildren(el3)" class="triangle">
             <div :class="traingleClass(el3)" @click.stop="twoFunction(el3)"></div></span>
 
-          <!-- автомобили3 -->
-          <label v-if="check('~L'+el3.id)" class="cbox auto" v-for="item3 in el3.automobiles" :key="item3.id"
-                 @click.stop="showAuto(item3.id)">
-            <input :ref="item3.id" type="checkbox" @click.stop="" :checked="check(item3.id)">
-            <span class="checkmark"></span>
-            <span class="text">{{item3.regNum}}</span>
-            <img @click.stop="openSetPanel(el3, item3)" class="set" src="../../assets/images/set.png"/>
+            <!-- автомобили3 -->
+            <label v-if="check('~L'+el3.id)" class="cbox auto" v-for="item3 in el3.data" :key="item3.automobileId">
+              <div class="div-checkbox" :class="{'checked':check(item3.automobileId)}">
+                <div class="like"/>
+              </div>
+              <span class="text">{{item3.name}}</span>
+              <img @mousedown="mousedown" @click.stop="openSetPanel(item3)" class="set"
+                   src="../../assets/images/set.png"/>
+            </label>
+            <!-- end автомобили3 -->
           </label>
-          <!-- end автомобили3 -->
+
+          <!-- автомобили2 -->
+          <label v-if="check('~L'+el2.id)" class="cbox auto" v-for="item2 in el2.data" :key="item2.automobileId">
+            <div class="div-checkbox" :class="{'checked':check(item2.automobileId)}">
+              <div class="like"/>
+            </div>
+            <span class="text">{{item2.name}}</span>
+            <img @mousedown="mousedown" @click.stop="openSetPanel(item2)" class="set"
+                 src="../../assets/images/set.png"/>
+          </label>
+          <!-- end автомобили2 -->
         </label>
 
-        <!-- автомобили2 -->
-        <label v-if="check('~L'+el2.id)" class="cbox auto" v-for="item2 in el2.automobiles" :key="item2.id"
-               @click.stop="showAuto(item2.id)">
-          <input :ref="item2.id" type="checkbox" @click.stop="" :checked="check(item2.id)">
-          <span class="checkmark"></span>
-          <span class="text">{{item2.regNum}}</span>
-          <img @click.stop="openSetPanel(el2, item2)" class="set" src="../../assets/images/set.png"/>
+        <!-- автомобили -->
+        <label v-for="item in el.data" class="cbox auto" v-if="check('~L'+el.id)" :key="item.automobileId">
+          <div class="div-checkbox" :class="{'checked':check(item.automobileId)}">
+            <div class="like"/>
+          </div>
+          <span class="text">{{item.name}}</span>
+          <img @mousedown="mousedown" @click.stop="openSetPanel(item)" class="set"
+               src="../../assets/images/set.png"/>
         </label>
-        <!-- end автомобили2 -->
+
+
+        <!-- end автомобили -->
       </label>
-
-      <!-- автомобили -->
-      <label v-for="item in el.automobiles" class="cbox auto" v-if="check('~L'+el.id)" :key="item.id"
-             @click.stop="showAuto(item.id)">
-        <input :ref="item.id" type="checkbox" @click.stop="" :checked="check(item.id)">
-        <span class="checkmark"></span>
-        <span class="text">{{item.regNum}}</span>
-        <img @click.stop="openSetPanel(el, item)" class="set" src="../../assets/images/set.png"/>
-      </label>
-
-
-      <!-- end автомобили -->
-    </label>
+    </div>
   </div>
 </template>
 
 <script>
+  import BrigadesPanel from "../combobox/BrigadesPanel";
+  import BrigadesHistory from '../combobox/BrigadesHistory'
+
   export default {
     name: "Brigades",
+    components: {
+      BrigadesPanel,
+      BrigadesHistory
+    },
+    data() {
+      return {
+        menu: {show: false},
+        historyPanelParams: {show: false}
+      }
+    },
     props: {
       layers: {type: Array}
     },
     methods: {
       isChildren(el) {
-        return (el.automobiles && el.automobiles.length) || (el.children && el.children.length);
+        return (el.data && el.data.length) || (el.children && el.children.length);
       },
       traingleClass(el) {
         return this.check('~L' + el.id) ? 'block' : 'block0';
       },
       isFull(el) {
-        return (el.children && el.children.length) || (el.automobiles && el.automobiles.length);
+        return (el.children && el.children.length) || (el.data && el.data.length);
       },
       check(val) {
         return this.$store.state.brigades.indexOf(val) > -1;
@@ -93,17 +108,38 @@
       showAutoList(id) {
         this.$store.dispatch('setBrigade', "~L" + id);
       },
-      showAuto(id, noRequest) {
-        console.log("...... idididid=", id)
+      openSetPanel(item) {
+        let id = item.automobileId;
+        this.menu.automobileId = item.automobileId;
+        this.menu.ordersId = item.ordersId;
+        this.menu.name = item.name;
+        this.menu.lastUpdate = item.lastUpdate;
+        this.menu.coord = [item.latitude, item.longitude];
+
+        // this.menu.lastUpdate = item.lastUpdate;
+        // this.menu.latitude = item.latitude;
+        // this.menu.longitude = item.longitude;
+        // this.menu.speed = item.speed;
+
+        // из сторе удаляем все ранее выбранные бригады
+        this.$store.getters.brigades.map(el => typeof el === 'number' && el !== id && this.$store.dispatch('setBrigade', el));
         this.$store.dispatch('setBrigade', id);
-        if (!noRequest) this.$root.$emit('showCarTraces', id, this.check(id));
       },
-      openSetPanel(el, item) {
-        setTimeout(() => {
-          // возвращает прежнее состояние чекбокса, которое не должно было менятся
-          this.$refs[item.id][0].checked = !this.$refs[item.id][0].checked;
-        }, 1);
-        this.$root.$emit('showBrigadeWayHistory', item.id);
+      mousedown($event) {
+        this.menu.show = false;
+        this.historyPanelParams.show = false;
+        this.menu.x = $event.clientX - $event.offsetX + 30;
+        this.menu.y = $event.clientY - $event.offsetY;
+        this.menu.show = true;
+      },
+      mouseLeave() {
+        this.menu.show = false;
+      },
+      openPanel(panel) {
+        if (panel === 'history') {
+          this.historyPanelParams = Object.assign({}, this.menu);
+          this.historyPanelParams.show = true;
+        }
       }
     }
   }
@@ -131,6 +167,30 @@
     padding: 8px 0;
   }
 
+  .div-checkbox {
+    position: relative;
+    width: 19px;
+    height: 19px;
+    background: #eee;
+    display: inline-block;
+    margin: 3px 10px -3px -30px;
+  }
+
+  .div-checkbox.checked {
+    background: #2196f3;
+  }
+
+  .like {
+    position: absolute;
+    left: 6px;
+    top: 4px;
+    width: 7px;
+    height: 8px;
+    border: solid #eee;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+  }
+
   .cbox {
     display: block;
     position: relative;
@@ -148,50 +208,16 @@
     padding-left: 50px;
   }
 
-  .cbox input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
+  .cbox.auto:hover .div-checkbox {
+    background: #ddd;
   }
 
-  .checkmark {
-    position: absolute;
-    top: 5px;
-    left: 20px;
-    height: 18px;
-    width: 18px;
-    background-color: #eee;
+  .cbox:hover > .div-checkbox.checked {
+    background: #1186e3;
   }
 
-  .cbox.auto:hover input ~ .checkmark {
-    background-color: #ccc;
-  }
-
-  .cbox input:checked ~ .checkmark {
-    background-color: #5973ff;
-    /*#2196F3;*/
-  }
-
-  .checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-  }
-
-  .cbox input:checked ~ .checkmark:after {
-    display: block;
-  }
-
-  .cbox .checkmark:after {
-    left: 5px;
-    top: 2px;
-    width: 5px;
-    height: 8px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    -webkit-transform: rotate(45deg);
-    -ms-transform: rotate(45deg);
-    transform: rotate(45deg);
+  .cbox.auto:hover .div-checkbox .like {
+    border-color: #ddd;
   }
 
   .triangle {
