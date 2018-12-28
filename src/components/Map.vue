@@ -111,11 +111,6 @@
       this.map = new L.Map('map').setView(this.center, this.zoom);
       application.map = this.map;
 
-      setTimeout(() => {
-        // Если данные для подложки не переданы, загружаем по умолчанию
-        if (!this.tile) application.map.addLayer(L.tileLayer(...application.tiles.googleStreets));
-      }, 1000);
-
       // инструменты изменения расстояний
       this.scale = L.control.scale({maxWidth: 240, metric: true, imperial: false, position: 'bottomleft'});
       this.polylineMeasure = L.control.polylineMeasure({
@@ -258,16 +253,18 @@
   }
 
   .leaflet-popup-content {
-    margin: 13px 19px;
+    margin: 3px 5px;
+    /*margin: 0;*/
     line-height: 1.4;
-  }
-
-  .leaflet-popup-content p {
-    margin: 18px 0;
+    text-align: center;
   }
 
   .own-popup {
-    margin-bottom: 0;
+    /*margin-bottom: 0;*/
+    text-align: center;
+    padding: 2px;
+    border-radius: 4px;
+    /*background-color: rgba(255, 255, 255, 0.2);*/
   }
 
   .own-popup .leaflet-popup-tip-container {

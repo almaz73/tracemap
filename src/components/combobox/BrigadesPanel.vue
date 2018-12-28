@@ -1,18 +1,18 @@
 <template>
   <div class="panel" :style="myStyle">
     <div class="menu">
-      <div style="pointer-events:none;">
-        <img src="../../assets/images/combobox/createReport.png"/>
-        Создать отчет
-      </div>
-      <div @click="openHistory()">
+      <div  @click="openInfo()">
         <img src="../../assets/images/combobox/pen.png"/>
-        Режим слежения за ТС
+        Информация
       </div>
-      <div style="pointer-events:none;">
-        <img src="../../assets/images/combobox/watch.png"/>
-        Изменить данные ТС
+      <div  @click="openHistory()">
+        <img src="../../assets/images/combobox/createReport.png"/>
+        История движения
       </div>
+      <!--<div style="pointer-events:none;">-->
+        <!--<img src="../../assets/images/combobox/watch.png"/>-->
+        <!--Режим слежения за ТС-->
+      <!--</div>-->
     </div>
 
   </div>
@@ -33,8 +33,12 @@
       }
     },
     methods: {
-      openHistory: function () {
+      openHistory () {
         this.$emit('openPanel', 'history');
+        this.menu.show = false
+      },
+      openInfo () {
+        this.$emit('openPanel', 'info');
         this.menu.show = false
       }
     }

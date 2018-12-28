@@ -2,21 +2,23 @@
   <div>
     <div class="fon" @click="close()" :style="fonStyle"></div>
     <div class="panel" :style="panelStyle">
+      <div style="float:left; font-size: 22px; cursor: pointer; margin-top: -10px" title="Дата последнего обновления">
+        <span @click="$emit('nextPanel', -1)"> &#60; </span>
+        <span @click="$emit('nextPanel', 1)"> &#62; </span></div>
+      <br>
       <h2 style="color: #3250ff">{{historyPanelParams.name}}</h2><br>
-      <h3>Выберите дату:</h3><br>
+      <h3>Выберите дату, время и отрезок времени:</h3><br>
       <hr size="0" color="#e5e5e5"/>
 
       <v-layout row wrap>
         <v-flex sm1>
-          oт
         </v-flex>
-        <v-flex sm6>
+        <v-flex sm10>
           <v-menu
             ref="menu1"
-            :close-on-content-click="false"
+            :close-on-content-click="true"
             v-model="menu1"
             :nudge-right="40"
-            :return-value.sync="date1"
             lazy
             transition="scale-transition"
             offset-y
@@ -34,14 +36,9 @@
               no-title
               color="blue lighten-1"
               locale="ru">
-              <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="menu1 = false">Отмена</v-btn>
-              <v-btn flat color="primary" @click="$refs.menu1.save(date1)">Принять</v-btn>
             </v-date-picker>
           </v-menu>
 
-        </v-flex>
-        <v-flex sm5>
           <v-menu
             ref="menu2"
             :close-on-content-click="false"
@@ -52,8 +49,6 @@
             transition="scale-transition"
             offset-y
             full-width
-            max-width="290px"
-            min-width="290px"
           >
             <v-text-field
               slot="activator"
@@ -71,116 +66,30 @@
               @change="$refs.menu2.save(time1)"
             ></v-time-picker>
           </v-menu>
+
+          <v-flex>
+            <v-text-field
+              v-model="duration"
+              label="Продолжительность в часах"
+              @change="duration"
+            ></v-text-field>
+          </v-flex>
         </v-flex>
       </v-layout>
 
-      <v-layout row wrap>
-        <v-flex sm1>
-          до
-        </v-flex>
-        <v-flex sm6>
-          <v-menu
-            ref="menu3"
-            :close-on-content-click="false"
-            v-model="menu3"
-            :nudge-right="40"
-            :return-value.sync="date2"
-            lazy
-            transition="scale-transition"
-            offset-y
-            width="10px"
-          >
-            <v-text-field
-              max-width="50px"
-              slot="activator"
-              v-model="date2"
-              label="Дата"
-              prepend-icon="event"
-              readonly
-            ></v-text-field>
-            <v-date-picker
-              v-model="date2"
-              no-title
-              color="blue lighten-1"
-              locale="ru">
-              <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="menu3 = false">Отмена</v-btn>
-              <v-btn flat color="primary" @click="$refs.menu3.save(date2)">Принять</v-btn>
-            </v-date-picker>
-          </v-menu>
+      <div v-if="historyLocalForage.join('').indexOf('_'+historyPanelParams.name+'_')>-1">
+        <h3>Просмотренные:</h3>
+        <div class="history-div">
+        <div class="history-buttons" v-for="(but, index) in histButtons" :key="index"
+              v-if="historyPanelParams.name==but.name"
+              @click="clickHistory(but)"
+              :title="but.time1+'-'+but.time2">{{but.date1}}
+          <span class="x" @click="clickDeleteHistory(but)" title="Удалить">x</span></div>
+        </div>
+      </div>
 
-        </v-flex>
-        <v-flex sm5>
-          <v-menu
-            ref="menu4"
-            :close-on-content-click="false"
-            v-model="menu4"
-            :nudge-right="40"
-            :return-value.sync="time2"
-            lazy
-            transition="scale-transition"
-            offset-y
-            full-width
-            max-width="290px"
-            min-width="290px"
-          >
-            <v-text-field
-              slot="activator"
-              v-model="time2"
-              class="date-select"
-              label="время"
-              prepend-icon="access_time"
-            ></v-text-field>
-            <v-time-picker
-              color="blue"
-              v-if="menu4"
-              v-model="time2"
-              format="24hr"
-              full-width
-              @change="$refs.menu4.save(time2)"
-            ></v-time-picker>
-          </v-menu>
-        </v-flex>
-      </v-layout>
-
-      <hr size="0" color="#e5e5e5"/>
-      <br>
-      <h3>Данные:</h3>
-      <table width="100%">
-        <tr>
-          <td>Последнее обновление:</td>
-          <td class="td-black">{{lastUpd}}</td>
-        </tr>
-        <tr>
-          <td>Координаты:</td>
-          <td class="td-black" style="font-size: 11px">{{historyPanelParams.coord}}</td>
-        </tr>
-      </table>
-      <h3>Статистика: ...</h3>
-      <!--<table width="100%">-->
-      <!--<tr>-->
-      <!--<td>Пробег(rv):</td>-->
-      <!--<td class="td-black">6,29</td>-->
-      <!--</tr>-->
-      <!--<tr>-->
-      <!--<td>Общая длительсность остановок:</td>-->
-      <!--<td class="td-black">1:15:00</td>-->
-      <!--</tr>-->
-      <!--<tr>-->
-      <!--<td>Потери сигнала:</td>-->
-      <!--<td class="td-black">3</td>-->
-      <!--</tr>-->
-      <!--<tr>-->
-      <!--<td>Общее время потери сигнала:</td>-->
-      <!--<td class="td-black">1:06:15</td>-->
-      <!--</tr>-->
-      <!--</table>-->
-      <!--<hr size="0" color="#e5e5e5"/>-->
-      <!--<br>-->
-      <!--<h3>Воспроизвести историю перемещения ТС</h3>-->
       <div class="buttons">
-        <button @click="report()">НОВЫЙ ОТЧЕТ</button>
-        <button @click="close()">ЗАКРЫТЬ</button>
+        <button @click="report()">ПОЛУЧИТЬ ИСТОРИЮ ДВИЖЕНИЯ</button>
       </div>
 
     </div>
@@ -188,6 +97,9 @@
 </template>
 
 <script>
+
+  import localforage from 'localforage';
+
   export default {
     name: "BrigadesHistory",
     props: {
@@ -197,12 +109,15 @@
       return {
         date1: '',
         date2: '',
-        time1: '8:00',
+        duration: 1,
+        time1: '09:00',
         time2: '10:00',
         menu1: false,
         menu2: false,
         menu3: false,
-        menu4: false
+        menu4: false,
+        histButtons: [],
+        historyLocalForage: []
       }
     },
     computed: {
@@ -226,9 +141,30 @@
     methods: {
       report: function () {
         this.historyPanelParams.startDate = this.date1 + 'T' + ('0' + this.time1).substr(-5) + ':00';
+
+        this.duration = parseInt(this.duration);
+        if (!this.duration) this.duration = 1;
+        let time = new Date(this.date1 + ' ' + this.time1);
+        time = new Date(time.getTime() + this.duration * 3600000);
+
+        this.date2 = time.getFullYear() + '-' + ('0' + (time.getMonth() + 1)).slice(-2) + '-' + ('0' + time.getDate()).slice(-2);
+        this.time2 = ('0' + time.getHours()).slice(-2) + ':' + ('0' + time.getSeconds()).slice(-2);
         this.historyPanelParams.endDate = this.date2 + 'T' + ('0' + this.time2).substr(-5) + ':00';
         this.$root.$emit('showCarTraces', true, this.historyPanelParams);
         this.historyPanelParams.show = false;
+      },
+      clickHistory(but) {
+        this.date1 = but.date1;
+        this.date2 = but.date2;
+        this.time1 = but.time1;
+        this.time2 = but.time2;
+        this.report();
+      },
+      clickDeleteHistory(but) {
+        this.historyLocalForage = this.historyLocalForage.filter(el => el && el !== but.oldName);
+        this.histButtons = this.histButtons.filter(el => el.oldName !== but.oldName);
+        localforage.setItem('HISTORY_BRIGADES', this.historyLocalForage);
+        localforage.removeItem(but.oldName);
       },
       close: function () {
         this.historyPanelParams.show = false;
@@ -237,6 +173,22 @@
     created() {
       let date = new Date();
       this.date1 = this.date2 = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+      localforage.getItem('HISTORY_BRIGADES').then(
+        his => {
+          if (his) this.historyLocalForage = his;
+          his && his.map(el => {
+            if (!el) return;
+            let arr = el.split("_");
+            let arr1 = arr[2].split('T');
+            let arr2 = arr[3].split('T');
+            let date1 = arr1[0];
+            let time1 = arr1[1].slice(0, -3);
+            let date2 = arr2[0];
+            let time2 = arr2[1].slice(0, -3);
+            this.histButtons.push({name: arr[1], date1, time1, date2, time2, oldName: el})
+          });
+        }
+      )
     }
   }
 </script>
@@ -258,7 +210,7 @@
     background: white;
     box-shadow: 0 0 5px #999;
     z-index: 1000;
-    padding: 20px;
+    padding: 12px 20px;
   }
 
   h3 {
@@ -278,7 +230,7 @@
   }
 
   .buttons {
-    margin-top: 30px;
+    margin-top: 10px;
     color: #3250ff;
     font-weight: bold;
     text-align: right;
@@ -290,5 +242,32 @@
 
   .buttons button:hover {
     background: #eee;
+  }
+
+  .history-div {
+    overflow: auto;
+    max-height: 60px;
+    min-height: 25px;
+  }
+
+  .history-buttons {
+    border: 1px solid #9e9e9e;
+    border-radius: 5px;
+    margin: 3px;
+    padding: 2px;
+    padding-right: 0;
+    font-size: 10px;
+    white-space: nowrap;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .history-buttons .x {
+    padding: 0px 3px;
+  }
+
+  .history-buttons .x:hover {
+    background: #bbbbbb;
+    height: 10px;
   }
 </style>

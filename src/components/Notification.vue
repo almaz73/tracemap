@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!!this.getText" class="root" @click="close()">
+  <div v-if="!!this.getText" class="root-notification" @click="close()">
     <div class="txt">{{this.getText}}</div>
     <div class="close">X</div>
   </div>
@@ -26,7 +26,7 @@
 </script>
 
 <style scoped>
-  .root {
+  .root-notification {
     position: absolute;
     z-index: 10000;
     right: 3px;

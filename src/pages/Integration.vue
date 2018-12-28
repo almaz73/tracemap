@@ -1,10 +1,12 @@
 <template>
   <div>
-    <div class="triggerShowButton online" @click="triggerOnline()"
-         :style="{'opacity':isVisibleOnlineBrigades?1:0.5}"></div>
-    <div class="triggerShowButton" @click="switchPopups()" :style="{'opacity':isVisiblePopups?1:0.5}"></div>
+    <div class="triggerShowButton online trig-auto" @click="triggerOnline()"
+         :style="{'opacity':isVisibleOnlineBrigades?1:0.5}"
+    ></div>
+    <div class="triggerShowButton trig-tooltip" @click="switchPopups()"
+         :style="{'opacity':isVisiblePopups?1:0.5, 'display':isVisibleOnlineBrigades?'block':'none'}"></div>
     <div class="integration" v-if="statusBar">
-      <router-link to="/password">Autorization:</router-link>
+      <router-link to="/password">Authorization:</router-link>
       <span style="color: green" v-if="isSocket">Websocket : connected</span>
       <span v-else>Websocket DISCONNECTED</span>
       <span
@@ -55,7 +57,6 @@
   const callMarkersMap = [];
   let brigadeMarkersMap = {};
   let brigadeQueue = [];
-  let functions = {};
 
   export default {
     name: "Integration",
@@ -84,7 +85,7 @@
         this.isSocket = open;
         if (this.isSocket) {
           stomp.setStompClient("/user/topic/mapcall/current", this.addedNewCalls);
-          stomp.setStompClient("/user/topic/brigade/current", this.addedNewrigades);
+          stomp.setStompClient("/user/topic/brigade/current", this.addedNewBrigades);
         } else {
           console.log("Websocket error: ", error)
 
@@ -93,34 +94,41 @@
         }
       },
       addedNewCalls(tick) {
+        let call = localStorage.getItem('focusOnCall');
+        if (call !== 'null') this.focusOnCall(call);
+
         let entity = JSON.parse(tick.body);
 
         if (entity instanceof Array) {
-          entity.map(el => this.addCall(el));
-
-          let call = localStorage.getItem('focusOnCall');
-          this.focusOnCall(call);
+          for (let callId in callMarkersMap) {
+            this.removeCall(callId);
+          }
+          entity.map(el => {
+            this.addCall(el);
+          });
         } else {
+          this.removeCall(entity.payload.id);
           if (entity.changeType === 'SAVED') {
-            if (!callMarkersMap[entity.payload.id]) {
-              this.addCall(entity.payload);
-            } else {
-              this.changeCall(entity.payload);
-            }
-          } else {
-            if (callMarkersMap[entity.payload.id]) {
-              this.removeCall(entity.payload);
-            }
+            this.addCall(entity.payload);
           }
         }
       },
-      removeCall(call) {
-        callMarkersMap[call.id].remove();
-        delete callMarkersMap[call.id];
+      removeCall(callId) {
+        let oldMarker = callMarkersMap[callId];
+        if (oldMarker) {
+          oldMarker.removeFrom(this.layerOnlineBrigade);
+          delete callMarkersMap[callId];
+        }
       },
       changeCall(call) {
-        this.removeCall(call);
-        this.addCall(call);
+      },
+      removeBrigade(ordersId) {
+        // Удаляем старую бригаду, если она была
+        const oldMarker = brigadeMarkersMap[ordersId];
+        if (oldMarker) {
+          oldMarker.removeFrom(this.layerOnlineBrigade);
+          delete brigadeMarkersMap[ordersId];
+        }
       },
       focusOnCall: function (e) {
         let call = JSON.parse((e && e.newValue) || e);
@@ -131,27 +139,38 @@
 
         localStorage.setItem('focusOnCall', null);
       },
-      addedNewrigades(tick) {
+      addedNewBrigades(tick) {
         let brigades = JSON.parse(tick.body);
 
+        let brigade = localStorage.getItem('focusOnBrigade');
+        if (brigade !== 'null') this.focusOnBrigade(brigade);
+
         // может прийти массив или одна бригада
-        if (brigades.length > 1) {
+        if (Array.isArray(brigades)) {
           brigadeQueue = brigades;
-          // при первом запуске надо проверить содержимое storage
-          let brigade = localStorage.getItem('focusOnBrigade');
-          this.focusOnBrigade(brigade);
           if (this.isVisibleOnlineBrigades) this.getNewBrigadeCoordinates();
         } else {
-          this.handleNewBrigade(brigades[0]);
+          this.handleBrigadeChange(brigades);
         }
+
+        this.setCheckboxBrigades(); // при каждом обновлении, обновляем данные в сторе о состояние комбобокса бригад
       },
-      handleNewBrigade(entity) {
-        if (!entity) return;
+      setCheckboxBrigades() {
+        this.$store.getters.brigades.forEach(el => typeof el === 'number' && this.$store.dispatch('setBrigade', el)); // стерем
+        brigadeQueue.forEach(el => {
+          if (el.automobileId) this.$store.dispatch('setBrigade', el.automobileId) // добавим
+        });
+        application.brigadeQueue = brigadeQueue;
+        application.callMarkersMap = callMarkersMap;
+        application.brigadeMarkersMap = brigadeMarkersMap;
+      },
+
+      handleBrigadeChange(entity) {
         let searchBrigadeIndex = -1;
-        let brigade = entity.payload;
+        let changedBrigadeQueue = entity.payload;
 
         brigadeQueue.find(function (brigadeInQueue, index) {
-          if (brigadeInQueue.id === brigade.id) {
+          if (brigadeInQueue.id === changedBrigadeQueue.id) {
             searchBrigadeIndex = index;
             return true;
           } else {
@@ -160,12 +179,12 @@
         });
 
         if (entity.changeType === 'SAVED') {
-          if (~searchBrigadeIndex) {
-            brigadeQueue[searchBrigadeIndex] = brigade;
+          if (searchBrigadeIndex !== -1) {
+            brigadeQueue[searchBrigadeIndex] = changedBrigadeQueue;
           } else {
-            brigadeQueue.push(brigade);
+            brigadeQueue.push(changedBrigadeQueue);
           }
-        } else if (~searchBrigadeIndex) {
+        } else if (searchBrigadeIndex !== -1) {
           brigadeQueue.splice(searchBrigadeIndex, 1);
         }
       },
@@ -173,17 +192,12 @@
         const brigadeQueueToFocus = JSON.parse((e && e.newValue) || e);
         if (brigadeQueueToFocus === null) return;
 
-
-        // markersDeferred.promise.then(() => {
-        // находим бригаду по совпадению номера автомобиля
-        // const brigadeMarker = brigadeMarkersMap[brigadeQueueToFocus.ordersId]; // <= надо будет подождать пока данные придут
-
-        // if (brigadeMarker) application.map.setView(brigadeMarker._latlng, 17);
-        // else console.log('Не удалось определить местонахождение бригады ' + brigadeQueueToFocus.brigade); // todo
-
-        localStorage.setItem('focusOnBrigade', null);
-        // });
-
+        if (Object.keys(brigadeMarkersMap).length) {
+          let brigadeMarker = brigadeMarkersMap[brigadeQueueToFocus.orderId];
+          if (brigadeMarker) application.map.setView(brigadeMarker._latlng, 17);
+          else console.log('Не удалось определить местонахождение бригады ' + brigadeQueueToFocus.brigade);
+          localStorage.setItem('focusOnBrigade', null);
+        }
       },
       addCall(call) {
         if (call.latitude && call.longitude) {
@@ -196,85 +210,89 @@
             iconUrl: require('../assets/images/ambulance/' + iconPath),
             iconSize: [25, 25],
             iconAnchor: [12, 25],
-            popupAnchor: [1, 30],
-            tooltipAnchor: [16, -28],
+            popupAnchor: [0, 50],
+            tooltipAnchor: [12, -20],
             shadowSize: [25, 25]
           });
 
           marker.setIcon(icon);
-          marker.bindPopup(L.popup({
+          marker.bindPopup(call.callNumber + (call.brigadeName ? '<br/>' + call.brigadeName : ''), {
             closeOnClick: false,
             autoClose: false,
             closeButton: false,
             autoPan: false,
             className: 'own-popup'
-          }).setContent('<p style="text-align: center">' + (call.callNumber || call.callNumber112) + (call.brigadeName ? ' ' + call.brigadeName : '') + '</p>'));
+          });
 
           if (this.isVisiblePopups) {
             marker.openPopup();
           }
 
           callMarkersMap[call.id] = marker;
-        } else {
-          callMarkersMap[call.id] = call;
         }
       },
-      addWfstMarker(marker) {
-        let oldMarker;
-
-        let iconName = (brigadeImgConsts[marker.code] || brigadeImgConsts['14']).img + '.png';
+      addChangeBrigadeMarker(brigadeGeodata) {
+        let iconName = (brigadeImgConsts[brigadeGeodata.code] || brigadeImgConsts['14']).img + '.png';
 
         let icon = L.icon({
           iconUrl: require('../assets/images/ambulance/brigadeStatus/' + iconName),
           iconSize: [25, 25],
           iconAnchor: [12, 25],
-          popupAnchor: [1, 22],
-          tooltipAnchor: [16, -28],
-          shadowSize: [25, 25],
+          popupAnchor: [0, 38],
+          tooltipAnchor: [12, -20],
+          // shadowSize: [40, 40],
           className: 'car-marker'
         });
 
-        let controlTime = marker.controlTime ? new Date(marker.controlTime) : null;
+        let controlTime = brigadeGeodata.controlTime ? new Date(brigadeGeodata.controlTime) : null;
         let hours = controlTime ? ('00' + controlTime.getHours()).slice(-2) : null;
         let minutes = controlTime ? ('00' + controlTime.getMinutes()).slice(-2) : null;
 
-        if (brigadeMarkersMap[marker.ordersId]) {
+        let controlTimeExceeded = controlTime && controlTime < new Date();
 
-          oldMarker = brigadeMarkersMap[marker.ordersId];
+        let marker = brigadeMarkersMap[brigadeGeodata.ordersId];
 
-          if (oldMarker.code !== marker.code) {
-            oldMarker.setIcon(icon);
-          }
+        if (!marker) {
+          // Создаем новый
+          marker = L.marker([brigadeGeodata.latitude, brigadeGeodata.longitude], {icon: icon}).addTo(this.layerOnlineBrigade);
 
-          // тестовая анимация
-          // marker.latitude += Math.random() / 100;
-          // marker.longitude += Math.random() / 100;
-
-          if (oldMarker.getLatLng().lat !== marker.latitude || oldMarker.getLatLng().lng !== marker.longitude) {
-            oldMarker.setLatLng([marker.latitude, marker.longitude]); // новое местоположение
-          }
-
-          oldMarker.getPopup().setContent(marker.brigadeName + (controlTime ? ' ' + hours + ':' + minutes : ''));
-        } else {
-          let myMarker = L.marker([marker.latitude, marker.longitude], {icon: icon}).addTo(this.layerOnlineBrigade);
-
-          oldMarker = myMarker;
-          oldMarker.code = marker.code;
-          oldMarker.brigadeName = marker.brigadeName;
-
-          myMarker.bindPopup(L.popup({
+          marker.bindPopup(L.popup({
             closeOnClick: false,
             autoClose: false,
             closeButton: false,
             autoPan: false,
             className: 'own-popup car-marker'
-          }).setContent(marker.brigadeName + (controlTime ? ' ' + hours + ':' + minutes : '')));
+          }));
 
           if (this.isVisiblePopups) {
-            oldMarker.openPopup();
+            marker.openPopup();
           }
 
-          brigadeMarkersMap[marker.ordersId] = oldMarker;
+          brigadeMarkersMap[brigadeGeodata.ordersId] = marker;
+        } else {
+          if (marker.code !== brigadeGeodata.code) {
+            marker.setIcon(icon);
+          }
+
+          if (marker.getLatLng().lat !== brigadeGeodata.latitude || marker.getLatLng().lng !== brigadeGeodata.longitude) {
+            marker.setLatLng([brigadeGeodata.latitude, brigadeGeodata.longitude]); // новое местоположение
+          }
+        }
+
+        marker.code = brigadeGeodata.code;
+        marker.getPopup().setContent(controlTimeExceeded ? '<span style="color:red">' + brigadeGeodata.brigade + '</span>' : brigadeGeodata.brigade);
+        let tooltipText = brigadeGeodata.statusName;
+        if (controlTime) {
+          let time = hours + ':' + minutes;
+          if (controlTimeExceeded) {
+            time = '<span style="color:red">' + time + '</span>'
+          }
+          tooltipText += '<br/>Контрольное время ' + time;
+        }
+        if (tooltipText) {
+          marker.bindTooltip(tooltipText)
+        } else {
+          marker.unbindTooltip();
         }
       },
       switchPopups() {
@@ -294,21 +312,20 @@
       triggerOnline() {
         // скрытие и показ бригад
         if (this.isVisibleOnlineBrigades) {
-          this.tmpLayers = this.layerOnlineBrigade.getLayers();
-          this.layerOnlineBrigade.clearLayers();
+          this.layerOnlineBrigade.removeFrom(application.map);
           this.isVisiblePopups = false;
         } else {
-          this.tmpLayers && this.tmpLayers.map(el => this.layerOnlineBrigade.addLayer(el));
-          this.getNewBrigadeCoordinates();
+          this.layerOnlineBrigade.addTo(application.map);
         }
         this.isVisibleOnlineBrigades = !this.isVisibleOnlineBrigades;
       },
       smootHRunningMarkers(bool) {
+        // пока отключено
         // плавное движение маркеров
-        let carMakers = document.querySelectorAll('.car-marker');
-        for (var i = 0; carMakers.length > i; i++) {
-          carMakers[i].style.transition = bool ? '.5s linear' : '';
-        }
+        // let carMakers = document.querySelectorAll('.car-marker');
+        // for (var i = 0; carMakers.length > i; i++) {
+        //   carMakers[i].style.transition = bool ? '4.75s linear' : '';
+        // }
       },
       async getParams() {
         const req = await axios.get('/ambulance/dictionaries/parameterValues');
@@ -335,20 +352,27 @@
               });
               if (brigade) {
                 brigadeGeodata.code = brigade.statusCode;
+                brigadeGeodata.brigade = brigade.brigade;
+                brigadeGeodata.statusName = brigade.statusName;
                 brigadeGeodata.controlTime = brigade.controlTime;
 
-                this.addWfstMarker(brigadeGeodata);
+                this.addChangeBrigadeMarker(brigadeGeodata);
               } else {
-                // Удаляем старую бригаду, если она была
-                const oldMarker = brigadeMarkersMap[ordersId];
-                if (oldMarker) {
-                  application.map.removeLayer(oldMarker);
-                  delete brigadeMarkersMap[ordersId];
-                }
+                this.removeBrigade(ordersId);
               }
+
               this.smootHRunningMarkers(true);
             }
           });
+
+          for (let ordersId in brigadeMarkersMap) {
+            let brigade = brigadeQueue.find(function (bq) {
+              return parseInt(bq.orderId) === parseInt(ordersId); // тут строка сравнивается с числом
+            });
+            if (!brigade) {
+              this.removeBrigade(ordersId);
+            }
+          }
         }
         this.timer = (this.statusBrigadeCoordinates !== 200 || document.hidden) ? 20 : 5;
 
@@ -364,9 +388,6 @@
       this.getParams();
       localStorage.setItem('mapIsOpen', true); // сохраняем состояние окна как открытое
 
-      window.addEventListener('storage', function (e) {
-        if (functions[e.key]) functions[e.key](e);
-      });
       window.addEventListener('beforeunload', function (e) {
         localStorage.setItem('mapIsOpen', false);
       }, false);
@@ -375,6 +396,20 @@
 
       application.map.on('zoomstart', () => this.smootHRunningMarkers(false));
       application.map.on('zoomend', () => this.smootHRunningMarkers(true));
+
+      // слушаем изменения локалстораж и показываем бригаду или вызов
+      window.addEventListener('storage', () => {
+        let brigade = localStorage.getItem('focusOnBrigade');
+        let call = localStorage.getItem('focusOnCall');
+        if (brigade !== 'null') {
+          this.focusOnBrigade(brigade);
+          localStorage.setItem('focusOnBrigade', null);
+        }
+        if (call !== 'null') {
+          this.focusOnCall(call);
+          localStorage.setItem('focusOnCall', null);
+        }
+      });
     },
     beforeDestroy() {
       localStorage.removeItem('mapIsOpen');
@@ -401,10 +436,9 @@
 
   .triggerShowButton {
     position: absolute;
-    height: 24px;
-    width: 4px;
+    width: 30px;
     z-index: 100;
-    left: 360px;
+    left: 378px;
     top: 20px;
     background: #FFFFFF;
     border-radius: 3px;
@@ -418,4 +452,14 @@
     left: 343px;
   }
 
+  .triggerShowButton.trig-auto {
+    background: url('../assets/edit/car_gray.png') no-repeat;
+    background-position-y: 50%;
+  }
+
+  .triggerShowButton.trig-tooltip {
+    background: url('../assets/edit/tooltip.png') no-repeat;
+    background-position-y: 50%;
+    background-position-x: 50%;
+  }
 </style>

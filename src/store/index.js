@@ -13,6 +13,7 @@ const createStore = () => {
       editTools: [], // old
       editLayers: [],
       brigades: [],
+      selectedBrigade: [], // при поиске это может быть массив бригад
       points: [],
       isShowTool: true,
       tools: [],
@@ -33,6 +34,9 @@ const createStore = () => {
       },
       brigades(state) {
         return state.brigades;
+      },
+      selectedBrigade(state) {
+        return state.selectedBrigade
       },
       points(state) {
         return state.points;
@@ -68,6 +72,12 @@ const createStore = () => {
         let exist = state.brigades.indexOf(brigade);
         if (exist > -1) state.brigades.splice(exist, 1);
         else state.brigades.push(brigade)
+      },
+      removeBrigades(state){
+        state.brigades = [];
+      },
+      setSelectedBrigade(state, brigades) {
+        state.selectedBrigade = brigades
       },
       setPoints(state, points) {
         state.points = points;
@@ -105,6 +115,12 @@ const createStore = () => {
       },
       setBrigade(context, brigade) {
         context.commit('setBrigade', brigade)
+      },
+      removeBrigades(context) {
+        context.commit('removeBrigades')
+      },
+      setSelectedBrigade(context, brigades) {
+        context.commit('setSelectedBrigade', brigades)
       },
       setShowTool(context, bool) {
         context.commit('setShowTool', bool)

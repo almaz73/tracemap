@@ -5,7 +5,7 @@
       <img v-else src="../../assets/images/edit/line.png"/>
     </span>
 
-    <span @click="onSelect('objectLayers')" v-if="showObjectLayers">
+    <span @click="onSelect('objectLayers')" v-if="showObjectLayers && readyForProduct">
       <img v-if="!isObjectLayers" src="../../assets/images/edit/layers_gray.png"/>
       <img v-else src="../../assets/images/edit/layers.png"/>
     </span>

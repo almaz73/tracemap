@@ -127,13 +127,14 @@
       },
       showElement(el) {
         let bool = this.$store.state.editLayers.indexOf(el.id) === -1;
-
+        this.$root.$emit('selectedLayer', 'begin', bool); // обозначим начало и конец для сбора всех слоев в один запрос
         if (this.cascad) {
           this.selectAllChildren(el, bool)
         } else {
           this.$store.dispatch('setEditLayer', el.id);
           this.$root.$emit('selectedLayer', el.id, bool);
         }
+        this.$root.$emit('selectedLayer', 'end', bool);
       },
       selectAllChildren(el, bool) {
         let that = this;

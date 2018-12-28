@@ -3,6 +3,8 @@
 // связываем с проигрываетелем: запуск/ пауза
 // по нажатию на линию, перетаскиваем маркер, показываем данные для выбранного участка
 
+import '../assets/vendor/Leaflet.MovingMarker/MovingMarker';
+import application from '../assets/js/application';
 
 let me = this;
 let colorSpeed = {
@@ -15,27 +17,25 @@ let colorSpeed = {
   "6": "violet",
   "7": "red",
   "8": "yellow",
-}
-
-import application from '../assets/js/application'
-import '../assets/vendor/Leaflet.MovingMarker/MovingMarker';
+};
 
 this.show = function (data, duration) {
   // получил даныне
   me.rootTimeArr = [];
   me.rootCoordinatesArr = [];
   me.rootInfo = [];
+  me.allElements = L.layerGroup().addTo(application.map);
 
   let timeArr = [];
 
   // добавим остановки
   data.stops.map(el => {
-    L.circle([el.coordinates[1], el.coordinates[0]], {
+    new L.CircleMarker([el.coordinates[1], el.coordinates[0]], {
       color: "black",
       fillColor: "yellow",
-      fillOpacity: 0.5,
-      radius: 20
-    }).addTo(application.map);
+      fillOpacity: 0.4,
+      opacity: 0.6
+    }).addTo(me.allElements);
   });
 
   let distance = 0; // чтобы суммировать весь пройденный путь
@@ -71,7 +71,7 @@ this.show = function (data, duration) {
       color: colorSpeed[el.properties.speedGroup],
       opacity: 0.7,
       weight: 7
-    }).addTo(application.map);
+    }).addTo(me.allElements);
   });
 
   // запомним первоначальное состояние для изменения скорости просмотра
@@ -83,7 +83,7 @@ this.show = function (data, duration) {
   // опредеяем границы просмотра
   application.map.fitBounds(me.rootCoordinatesArr);
 
-  // добавляем проигывание
+  // добавляем проигрывание
   newAnimation(me.rootCoordinatesArr, me.rootTimeArr, duration);
 
   newPopup(0);
@@ -100,22 +100,28 @@ function getDeltaTime(timeStart, timeEnd) {
  * Проигрывание/пауза
  */
 this.playClick = function (el) {
+  if (!me.marker) {
+    return console.log(' анимация еще не создана !')
+  }
+
   if (el) {
     me.marker.pause();
 
     let latlng = me.marker.getLatLng();
     this.findNode(latlng.lat, latlng.lng);
-  }
-  else me.marker.start();
-  if (me.marker.isRunning()) setSlider(); // чтобы обновить вид кнопки плеера
+  } else me.marker.start();
+  if (me.marker.isRunning()) setPleerButton(); // чтобы обновить вид кнопки плеера
 };
 
-function setSlider() {
+/**
+ * управлением видом кнопки проигрывателя
+ */
+function setPleerButton() {
   me.marker.closePopup();
   setTimeout(() => {
-    if (me.marker.isRunning()) setSlider();
+    if (me.marker.isRunning()) setPleerButton();
     else me.callBack(true);
-  }, 100)
+  }, 200)
 }
 
 /**
@@ -144,7 +150,8 @@ this.findNode = function (lat, lng) {
   let coordinatesArr = me.rootCoordinatesArr.slice(node.index);
 
   newAnimation(coordinatesArr, tmpTimeArr, undefined, node.index);
-  newPopup(node.index)
+  newPopup(node.index);
+  me.marker.openPopup();
 };
 
 /**
@@ -164,8 +171,8 @@ function newAnimation(coordinatesArr, tmpTimeArr, duration, index) {
   tmpTimeArr.map(el => timeArr.push(el * SpeedUP));
 
   // добавляем проигрывание
-  if (me.marker) application.map.removeLayer(me.marker);
-  me.marker = L.Marker.movingMarker(coordinatesArr, timeArr).addTo(application.map);
+  if (me.marker) me.allElements.removeLayer(me.marker);
+  me.marker = L.Marker.movingMarker(coordinatesArr, timeArr).addTo(me.allElements);
 
   me.marker.on('onclick', function (e) {
     this.openPopup();
@@ -186,6 +193,20 @@ function newPopup(index) {
   popupContent += '<br>Путь: ' + distance + ' км';
   me.marker.bindPopup(popupContent)
 }
+
+/**
+ * Чищу все элементы при переходе на другую историю
+ */
+this.clear = function () {
+  application.map.removeLayer(me.allElements);
+};
+
+// установить авто на начало пути, показать маркер
+this.showClick = function () {
+  newAnimation(me.rootCoordinatesArr, me.rootTimeArr);
+  newPopup(0);
+  me.marker.openPopup();
+};
 
 export default this;
 

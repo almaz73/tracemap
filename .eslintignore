@@ -4,3 +4,5 @@
 /*.js
 /test/unit/coverage/
 src/assets/vendor/*
+src/assets/js/*
+src/assets/*

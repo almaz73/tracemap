@@ -5,12 +5,13 @@
     <!--<div style="background: orange; z-index: 100">{{this.$root.username}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{$store.state}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{$store.state.editLayers}}</div>-->
-    <!--<div style="background: orange; z-index: 100">{{$store.state.brigades}}</div>-->
+    <!--<div style="background: orange; z-index: 1000">{{$store.state.brigades}}</div>-->
+    <!--<div style="background: greenyellow; z-index: 1000" >{{$store.state.selectedBrigade}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{$store.state.notifications}}</div>-->
     <!--<div style="background: orange; position: absolute; z-index: 100; opacity: 0.5">...{{$store.getters.notifications[0]}}</div>-->
 
     <Map :tile="tile"/>
-    <PlusSearch/>
+    <PlusSearch style="opacity: 5" />
     <Tools v-if="$store.state.isShowTool" :showLayers="objectLayers.length>0"
            :showCars="cars.length>0"/>
     <Zones v-if="isObjectLayers && $store.state.isShowTool" :objectLayers="objectLayers"/>

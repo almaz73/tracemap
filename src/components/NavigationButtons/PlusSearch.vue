@@ -1,6 +1,6 @@
 <template>
   <div class="menuSearch">
-    <div class="menu" :class="{opened: show}" @click="toShowTools()">{{show ? '+' : '...'}}</div>
+    <div class="menu" :class="{opened: !show}" @click="toShowTools()">{{!show ? '+' : '...'}}</div>
     <input v-model="inputValue" @keyup="onKeyUp()" placeholder="search"/>
     <br>
     <div v-if="isShowPlaces" class="lines" @click="setPlace(place.guid)" v-for="place in places.data" :key="place.y">
@@ -17,16 +17,19 @@
     name: "PlusSearch",
     data() {
       return {
-        show: true,
         places: [],
         inputValue: '',
         isShowPlaces: false,
       }
     },
+    computed: {
+      show() {
+        return this.$store.getters.isShowTool
+      }
+    },
     methods: {
       toShowTools() {
-        this.show = !this.show;
-        this.$store.dispatch('setShowTool', this.show)
+        this.$store.dispatch('setShowTool', !this.$store.getters.isShowTool)
       },
       async onKeyUp() {
         this.isShowPlaces = true;
