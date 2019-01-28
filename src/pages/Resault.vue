@@ -2,6 +2,7 @@
   <div>
     <Notification/>
 
+    <!--<div style="background: orange; z-index: 100">{{this.$store.getters.tools}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{this.$root.username}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{$store.state}}</div>-->
     <!--<div style="background: orange; z-index: 100">{{$store.state.editLayers}}</div>-->
@@ -11,12 +12,11 @@
     <!--<div style="background: orange; position: absolute; z-index: 100; opacity: 0.5">...{{$store.getters.notifications[0]}}</div>-->
 
     <Map :tile="tile"/>
-    <PlusSearch style="opacity: 5" />
+    <PlusSearch style="opacity: 5"/>
     <Tools v-if="$store.state.isShowTool" :showLayers="objectLayers.length>0"
            :showCars="cars.length>0"/>
     <Zones v-if="isObjectLayers && $store.state.isShowTool" :objectLayers="objectLayers"/>
     <Brigades v-if="isCar && $store.state.isShowTool" :layers="cars"/>
-    <cCarCombobox v-if="isCar2 && $store.state.isShowTool"/>
     <Integration @setTile="setTile"/>
     <IntegrationZones @setLayer="setLayer"/>
     <IntegrationBrigadeHistory @setCars="setCars"/>
@@ -69,11 +69,6 @@
       isCar() {
         return this.$store.getters.tools.find(el => {
           return el.tool === 'car' && el.val === true
-        });
-      },
-      isCar2() {
-        return this.$store.getters.tools.find(el => {
-          return el.tool === 'car2' && el.val === true
         });
       }
     },

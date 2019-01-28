@@ -127,14 +127,14 @@
       },
       showElement(el) {
         let bool = this.$store.state.editLayers.indexOf(el.id) === -1;
-        this.$root.$emit('selectedLayer', 'begin', bool); // обозначим начало и конец для сбора всех слоев в один запрос
+        this.$root.$emit('SELECTED_LAYER', 'begin', bool); // обозначим начало и конец для сбора всех слоев в один запрос
         if (this.cascad) {
           this.selectAllChildren(el, bool)
         } else {
           this.$store.dispatch('setEditLayer', el.id);
-          this.$root.$emit('selectedLayer', el.id, bool);
+          this.$root.$emit('SELECTED_LAYER', el.id, bool);
         }
-        this.$root.$emit('selectedLayer', 'end', bool);
+        this.$root.$emit('SELECTED_LAYER', 'end', bool);
       },
       selectAllChildren(el, bool) {
         let that = this;
@@ -150,11 +150,11 @@
           if (that.$store.getters.editLayers.includes(el.id)) {
             if (!bool) {
               that.$store.dispatch('setEditLayer', el.id);
-              that.$root.$emit('selectedLayer', el.id, bool);
+              that.$root.$emit('SELECTED_LAYER', el.id, bool);
             }
           } else if (bool) {
             that.$store.dispatch('setEditLayer', el.id);
-            that.$root.$emit('selectedLayer', el.id, bool);
+            that.$root.$emit('SELECTED_LAYER', el.id, bool);
           }
         }
       },

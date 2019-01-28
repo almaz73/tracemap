@@ -45,7 +45,7 @@
     methods: {
       showLayer(el) {
         this.$store.dispatch('setEditLayer', el.id);
-        this.$root.$emit('selectedLayer', el.id, this.$store.state.editLayers.indexOf(el.id) > -1);
+        this.$root.$emit('SELECTED_LAYER', el.id, this.$store.state.editLayers.indexOf(el.id) > -1);
       }
     }
   }

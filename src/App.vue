@@ -117,4 +117,7 @@
 
   /************************ end Material Icons **********************/
 
+  .datepicker {
+    box-shadow: 0 0 12px !important;
+  }
 </style>

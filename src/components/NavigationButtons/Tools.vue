@@ -1,28 +1,30 @@
 <template>
   <div class="root">
-    <span @click="onSelect('line')">
+    <span @click="onSelect('line')" title="Линейка">
       <img v-if="!isLine" src="../../assets/images/edit/line_gray.png"/>
       <img v-else src="../../assets/images/edit/line.png"/>
     </span>
 
-    <span @click="onSelect('objectLayers')" v-if="showObjectLayers && readyForProduct">
+    <span @click="onSelect('objectLayers')" v-if="showObjectLayers && readyForProduct" title="Слои">
       <img v-if="!isObjectLayers" src="../../assets/images/edit/layers_gray.png"/>
       <img v-else src="../../assets/images/edit/layers.png"/>
     </span>
 
-    <span @click="onSelect('square')" v-if="readyForProduct && readyForProduct && false">
+    <span @click="onSelect('square')" v-if="readyForProduct && false" title="Добавление новых слоев">
       <img v-if="!isSquare" src="../../assets/images/edit/square_gray.png"/>
       <img v-else src="../../assets/images/edit/square.png"/>
     </span>
 
-    <span @click="onSelect('car')" v-if="showCars">
+    <span @click="onSelect('section')" title="Путь между двумя точками">
+      <img v-if="!isSection" src="../../assets/images/edit/path_gray.png"/>
+      <img v-else src="../../assets/images/edit/path.png"/>
+    </span>
+
+    <span @click="onSelect('car')" v-if="showCars" title="Бригады">
       <img v-if="!isCar" src="../../assets/images/edit/car_gray.png"/>
       <img v-else src="../../assets/images/edit/car.png"/>
     </span>
-    <span @click="onSelect('car2')" v-if="readyForProduct && false">
-      <img v-if="!isCar2" src="../../assets/images/edit/car_gray.png"/>
-      <img v-else src="../../assets/images/edit/car.png"/>
-    </span>
+
   </div>
 </template>
 
@@ -31,7 +33,7 @@
     name: "Tools",
     data() {
       return {
-        // если режим разхработки показываем все кнопки, и скрываем если еще не готов, нужно снять условие если готово
+        // если режим разработки - показываем все кнопки, а для продуктовой только готовые без этого условия
         readyForProduct: document.location.href.includes('localhost:8080') || false
       }
     },
@@ -48,8 +50,8 @@
       isCar: function () {
         return this.$store.getters.tools.find(el => el.tool === 'car' && el.val === true)
       },
-      isCar2: function () {
-        return this.$store.getters.tools.find(el => el.tool === 'car2' && el.val === true)
+      isSection: function () {
+        return this.$store.getters.tools.find(el => el.tool === 'section' && el.val === true)
       }
     },
     props: {
@@ -69,6 +71,8 @@
       onSelect(tool) {
         let val = !this["is" + tool[0].toUpperCase() + tool.slice(1)];
         this.$store.dispatch('setTools', {tool, val});
+        this.$root.$emit('UN_SELECTED_CALL', 'forse');
+        this.$root.$emit('UN_SELECTED_BRIGADE', 'forse');
       }
     }
   }

@@ -1,10 +1,13 @@
 <template>
   <div>
-    <div class="triggerShowButton online trig-auto" @click="triggerOnline()"
+    <div class="triggerShowButton trig-call" @click="hideCalls()"
+         :style="{'opacity':isVisibleOnlineCalls?1:0.5}"
+    ></div>
+    <div class="triggerShowButton trig-auto" @click="hideBrigades()"
          :style="{'opacity':isVisibleOnlineBrigades?1:0.5}"
     ></div>
-    <div class="triggerShowButton trig-tooltip" @click="switchPopups()"
-         :style="{'opacity':isVisiblePopups?1:0.5, 'display':isVisibleOnlineBrigades?'block':'none'}"></div>
+    <div class="triggerShowButton trig-tooltip" @click="showMarkers(!isVisiblePopups)"
+         :style="{'opacity':isVisiblePopups?1:0.5, 'display':isVisibleOnlineBrigades||isVisibleOnlineCalls?'block':'none'}"></div>
     <div class="integration" v-if="statusBar">
       <router-link to="/password">Authorization:</router-link>
       <span style="color: green" v-if="isSocket">Websocket : connected</span>
@@ -14,7 +17,10 @@
         :style="{color: statusBrigadeCoordinates===200? 'green':'red'}"
       >| Brigade coordinates: upd {{timer}}sec.</span>
     </div>
-    <Legend :labels="legendItems"/>
+    <Legend :labels="legendItems" :labelsAssigned="labelsAssigned"/>
+    <SelectedBrigade/>
+    <SelectedCall/>
+    <Section/>
   </div>
 </template>
 
@@ -24,35 +30,9 @@
   import L from 'leaflet';
   import * as axios from 'axios';
   import Legend from "../components/Legend";
-
-  const colorByCallSignId = {
-    2: {img: 'sp', text: 'Скорая помощь'},
-    3: {img: 'np', text: 'Неотложный вызов'},
-    5: {img: 'pp', text: 'Перевозка плановая'},
-    6: {img: 'pe', text: 'Перевозка плановая экстренная'},
-    7: {img: 'spc', text: 'СПЦ'}
-  };
-
-  const brigadeImgConsts = {
-    '1': {img: 'free', text: 'Свободна'},
-    '2': {img: 'comeToStation', text: 'Возврат на подстанцию'},
-    '3': {img: 'atStation', text: 'На подстанции'},
-    '4': {img: 'fueling', text: 'Бензин'},
-    '5': {img: 'medicalFueling', text: 'Медикаменты'},
-    '6': {img: 'carHandling', text: 'Передача вызова'},
-    '7': {img: 'lunch', text: 'Обед'},
-    '8': {img: 'onCall', text: 'На вызове'},
-    '9': {img: 'goFromStation', text: 'Выезд с подстанции'},
-    '10': {img: 'nearCallPlace', text: 'Доезд к месту вызова'},
-    '11': {img: 'hospitalization', text: 'Госпитализация'},
-    '12': {img: 'nearLPU', text: 'Доезд к ЛПУ'},
-    '13': {img: 'receivePatient', text: 'Доставлен в ЛПУ'},
-    '14': {img: 'dispatcherClosing', text: 'Снята диспетчером'},
-    '15': {img: 'repairs', text: 'Ремонт'},
-    '16': {img: 'dispatcherClosing', text: 'На обед'},
-    '17': {img: 'dispatcherClosing', text: 'Пересменка'},
-    '18': {img: 'dispatcherClosing', text: 'Замена машины'}
-  };
+  import SelectedCall from '../components/SelectedCall.vue'; // для показа данных выбранного вызова
+  import SelectedBrigade from '../components/SelectedBrigade.vue'; // для открытия панели выбранной бригады
+  import Section from '../components/Section.vue';
 
   const callMarkersMap = [];
   let brigadeMarkersMap = {};
@@ -60,14 +40,18 @@
 
   export default {
     name: "Integration",
-    components: {Legend},
+    components: {Legend, SelectedBrigade, SelectedCall, Section},
     data() {
       return {
         isSocket: true,
         statusBrigadeCoordinates: 0,
-        isVisiblePopups: false,
+        isVisiblePopups: true, // видимость тултипов к маркерам
         timer: 0,
-        isVisibleOnlineBrigades: true
+        isVisibleOnlineBrigades: true,
+        isVisibleOnlineCalls: true,
+        modeFullShow: true, // если false - показ по фильтру, в слоях только выбранные вызовы и бригады
+        layerOnlineCall: null, // слой вызовов
+        layerOnlineBrigade: null // слой бригад
       }
     },
     computed: {
@@ -76,7 +60,12 @@
       },
       legendItems: function () {
         let arr = [];
-        Object.keys(brigadeImgConsts).map(el => arr.push(brigadeImgConsts[el]));
+        Object.keys(application.brigadeImgConsts).map(el => arr.push(application.brigadeImgConsts[el]));
+        return arr;
+      },
+      labelsAssigned: function () {
+        let arr = [];
+        Object.keys(application.colorByCallSignId).map(el => arr.push(application.colorByCallSignId[el]));
         return arr;
       }
     },
@@ -87,10 +76,7 @@
           stomp.setStompClient("/user/topic/mapcall/current", this.addedNewCalls);
           stomp.setStompClient("/user/topic/brigade/current", this.addedNewBrigades);
         } else {
-          console.log("Websocket error: ", error)
-
-          // через десять секунд пробуем заново подключиться
-          // if (error.type === 'close') setTimeout(() => stomp.connect(this.isSocketConnected), 10000);
+          console.error("Websocket error: ", error)
         }
       },
       addedNewCalls(tick) {
@@ -116,11 +102,9 @@
       removeCall(callId) {
         let oldMarker = callMarkersMap[callId];
         if (oldMarker) {
-          oldMarker.removeFrom(this.layerOnlineBrigade);
+          oldMarker.removeFrom(this.layerOnlineCall);
           delete callMarkersMap[callId];
         }
-      },
-      changeCall(call) {
       },
       removeBrigade(ordersId) {
         // Удаляем старую бригаду, если она была
@@ -202,8 +186,11 @@
       addCall(call) {
         if (call.latitude && call.longitude) {
 
-          let marker = L.marker([call.latitude, call.longitude]).addTo(this.layerOnlineBrigade);
-          let iconName = (colorByCallSignId[call.callSignCode] || colorByCallSignId[2]).img + '.png';
+          let marker = L.marker([call.latitude, call.longitude]);
+
+          if (this.modeFullShow) marker.addTo(this.layerOnlineCall); // если выборочный показ, не добавляем в слой
+
+          let iconName = (application.colorByCallSignId[call.callSignCode] || application.colorByCallSignId[2]).img + '.png';
           let iconPath = (call.assigned ? 'assigned/' : '') + iconName;
 
           let icon = L.icon({
@@ -212,7 +199,8 @@
             iconAnchor: [12, 25],
             popupAnchor: [0, 50],
             tooltipAnchor: [12, -20],
-            shadowSize: [25, 25]
+            shadowSize: [25, 25],
+            img: iconName.slice(0, -4)
           });
 
           marker.setIcon(icon);
@@ -224,6 +212,9 @@
             className: 'own-popup'
           });
 
+          marker.on('mouseover mousedown', e => this.$root.$emit('SELECTED_CALL', call, e.type));
+          marker.on('mouseout', () => this.$root.$emit('UN_SELECTED_CALL'));
+
           if (this.isVisiblePopups) {
             marker.openPopup();
           }
@@ -231,8 +222,70 @@
           callMarkersMap[call.id] = marker;
         }
       },
+
+      /**
+       * Управлением отображением вызовов и бригад
+       * убирает все маркеры и заново расставляет выбранные вызовы и бригады
+       * входные данные {callIds, brigadesOrdersIds} в виде массивов id {number}
+       * если obj==null покаызваем все, иначе по фильтру
+       * eсли bounds == true карту масштабируем, чтобы были видны все маркеры вместе
+       */
+      managerLayers(obj, bounds) {
+        this.modeFullShow = !obj;
+
+        let boundsLatLng = {minLat: Infinity, minLng: Infinity, maxLat: -Infinity, maxLng: -Infinity}; // 4 крайних координатов у маркеров
+
+        function getBounds(marker) {
+          if (boundsLatLng.maxLat < marker.getLatLng().lat) boundsLatLng.maxLat = marker.getLatLng().lat;
+          if (boundsLatLng.minLat > marker.getLatLng().lat) boundsLatLng.minLat = marker.getLatLng().lat;
+          if (boundsLatLng.maxLng < marker.getLatLng().lng) boundsLatLng.maxLng = marker.getLatLng().lng;
+          if (boundsLatLng.minLng > marker.getLatLng().lng) boundsLatLng.minLng = marker.getLatLng().lng;
+        }
+
+        if (obj && obj.brigadesOrdersIds && obj.brigadesOrdersIds.length && !this.isVisibleOnlineBrigades) this.hideBrigades();
+        if (obj && obj.callIds && obj.callIds.length && !this.isVisibleOnlineCalls) this.hideCalls();
+
+        if (!obj || (obj && !obj.noClean)) this.cleanUpLayers(); // не убрать что было с экрана если есть noClean
+
+        if (!obj) {
+          callMarkersMap.map(marker => {
+            marker.addTo(this.layerOnlineCall);
+            if (bounds) getBounds(marker);
+          });
+          Object.keys(brigadeMarkersMap).map(id => {
+            let marker = brigadeMarkersMap[id];
+            marker.addTo(this.layerOnlineBrigade);
+            if (bounds) getBounds(marker);
+          });
+          this.showMarkers(this.isVisiblePopups);
+        } else {
+          if (obj.callIds && obj.callIds.length) this.isVisibleOnlineCalls = true;
+
+          for (let id in callMarkersMap) {
+            if (obj.callIds && obj.callIds.includes(+id)) {
+              callMarkersMap[id].addTo(this.layerOnlineCall);// все выбранные вызовы
+              if (bounds) getBounds(callMarkersMap[id]);
+            }
+          }
+
+          Object.keys(brigadeMarkersMap).map(id => {
+            if (obj.brigadesOrdersIds.includes(+id)) {
+              brigadeMarkersMap[id].addTo(this.layerOnlineBrigade);// бригады
+              if (bounds) getBounds(brigadeMarkersMap[id]);
+            }
+          });
+        }
+        if (bounds) {
+          // расширяем границы для отображения всех маркеров
+          application.map.fitBounds([[boundsLatLng.maxLat, boundsLatLng.maxLng], [boundsLatLng.minLat, boundsLatLng.minLng]]);
+        }
+      },
+      cleanUpLayers() {
+        callMarkersMap.map(marker => marker.remove(this.layerOnlineCall));
+        Object.keys(brigadeMarkersMap).map(id => brigadeMarkersMap[id].remove(this.layerOnlineBrigade));
+      },
       addChangeBrigadeMarker(brigadeGeodata) {
-        let iconName = (brigadeImgConsts[brigadeGeodata.code] || brigadeImgConsts['14']).img + '.png';
+        let iconName = (application.brigadeImgConsts[brigadeGeodata.code] || application.brigadeImgConsts['14']).img + '.png';
 
         let icon = L.icon({
           iconUrl: require('../assets/images/ambulance/brigadeStatus/' + iconName),
@@ -241,7 +294,8 @@
           popupAnchor: [0, 38],
           tooltipAnchor: [12, -20],
           // shadowSize: [40, 40],
-          className: 'car-marker'
+          className: 'car-marker',
+          img: iconName.slice(0, -4)
         });
 
         let controlTime = brigadeGeodata.controlTime ? new Date(brigadeGeodata.controlTime) : null;
@@ -254,7 +308,9 @@
 
         if (!marker) {
           // Создаем новый
-          marker = L.marker([brigadeGeodata.latitude, brigadeGeodata.longitude], {icon: icon}).addTo(this.layerOnlineBrigade);
+          marker = L.marker([brigadeGeodata.latitude, brigadeGeodata.longitude], {icon: icon});
+
+          if (this.modeFullShow) marker.addTo(this.layerOnlineBrigade); // если выборочный показ не добавляем в слой
 
           marker.bindPopup(L.popup({
             closeOnClick: false,
@@ -263,6 +319,9 @@
             autoPan: false,
             className: 'own-popup car-marker'
           }));
+
+          marker.on('mouseover mousedown', e => this.$root.$emit('SELECTED_BRIGADE', brigadeGeodata, e.type));
+          marker.on('mouseout', () => this.$root.$emit('UN_SELECTED_BRIGADE'));
 
           if (this.isVisiblePopups) {
             marker.openPopup();
@@ -295,37 +354,58 @@
           marker.unbindTooltip();
         }
       },
-      switchPopups() {
-        this.isVisiblePopups = !this.isVisiblePopups;
+      /**
+       * Механизм работы с тултипами. Показать/скрыть все. Показать только один
+       * если open==true открыть , если element есть, открывать только один
+       */
+      showMarkers(open, element) {
+        this.isVisiblePopups = open;
+
         for (let callId in callMarkersMap) {
           let call = callMarkersMap[callId];
 
-          call.openPopup && call[this.isVisiblePopups ? 'openPopup' : 'closePopup']();
+          call && call.openPopup && call[open ? 'openPopup' : 'closePopup']();
         }
 
         for (let ordersId in brigadeMarkersMap) {
           let brigade = brigadeMarkersMap[ordersId];
 
-          brigade.openPopup && brigade[this.isVisiblePopups ? 'openPopup' : 'closePopup']();
+          brigade.openPopup && brigade[open ? 'openPopup' : 'closePopup']();
+        }
+
+        if (element) {
+          brigadeMarkersMap && brigadeMarkersMap[element] && brigadeMarkersMap[element]['openPopup']();
+          callMarkersMap && callMarkersMap[element] && callMarkersMap[element]['openPopup']();
+          this.isVisiblePopups = true;
         }
       },
-      triggerOnline() {
-        // скрытие и показ бригад
+      /**
+       * Скрытие/показ бригад
+       */
+      hideBrigades() {
         if (this.isVisibleOnlineBrigades) {
           this.layerOnlineBrigade.removeFrom(application.map);
-          this.isVisiblePopups = false;
         } else {
           this.layerOnlineBrigade.addTo(application.map);
         }
         this.isVisibleOnlineBrigades = !this.isVisibleOnlineBrigades;
+        this.statePopupButton();
       },
-      smootHRunningMarkers(bool) {
-        // пока отключено
-        // плавное движение маркеров
-        // let carMakers = document.querySelectorAll('.car-marker');
-        // for (var i = 0; carMakers.length > i; i++) {
-        //   carMakers[i].style.transition = bool ? '4.75s linear' : '';
-        // }
+      /**
+       * Скрытие/показ вызовов
+       */
+      hideCalls() {
+        if (this.isVisibleOnlineCalls) {
+          this.layerOnlineCall.removeFrom(application.map);
+          this.$root.$emit('UN_SELECTED_CALL', 'forse');
+        } else {
+          this.layerOnlineCall.addTo(application.map);
+        }
+        this.isVisibleOnlineCalls = !this.isVisibleOnlineCalls;
+        this.statePopupButton();
+      },
+      statePopupButton() {
+        if (!this.isVisibleOnlineBrigades && !this.isVisibleOnlineCalls) this.isVisiblePopups = false
       },
       async getParams() {
         const req = await axios.get('/ambulance/dictionaries/parameterValues');
@@ -360,8 +440,6 @@
               } else {
                 this.removeBrigade(ordersId);
               }
-
-              this.smootHRunningMarkers(true);
             }
           });
 
@@ -393,9 +471,10 @@
       }, false);
 
       this.layerOnlineBrigade = L.layerGroup().addTo(application.map);
+      this.layerOnlineCall = L.layerGroup().addTo(application.map);
 
-      application.map.on('zoomstart', () => this.smootHRunningMarkers(false));
-      application.map.on('zoomend', () => this.smootHRunningMarkers(true));
+      // application.map.on('zoomstart', () => this.smootHRunningMarkers(false));
+      // application.map.on('zoomend', () => this.smootHRunningMarkers(true));
 
       // слушаем изменения локалстораж и показываем бригаду или вызов
       window.addEventListener('storage', () => {
@@ -410,6 +489,9 @@
           localStorage.setItem('focusOnCall', null);
         }
       });
+
+      this.$root.$on('SHOW_MARKERS', this.showMarkers);
+      this.$root.$on('MANAGER_LAYERS', this.managerLayers);
     },
     beforeDestroy() {
       localStorage.removeItem('mapIsOpen');
@@ -438,7 +520,7 @@
     position: absolute;
     width: 30px;
     z-index: 100;
-    left: 378px;
+    left: 409px;
     top: 20px;
     background: #FFFFFF;
     border-radius: 3px;
@@ -448,12 +530,15 @@
     cursor: pointer;
   }
 
-  .triggerShowButton.online {
-    left: 343px;
-  }
-
   .triggerShowButton.trig-auto {
     background: url('../assets/edit/car_gray.png') no-repeat;
+    background-position-y: 50%;
+    left: 376px;
+  }
+
+  .triggerShowButton.trig-call {
+    left: 343px;
+    background: url('../assets/edit/call_gray.png') no-repeat;
     background-position-y: 50%;
   }
 

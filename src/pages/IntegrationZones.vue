@@ -50,7 +50,7 @@
         data.map(el => {
           let name = el.layerId + "|" + el.name;
           this.geoJsons[name] = L.geoJSON(JSON.parse(el.geomControl));
-          application.map.addLayer(this.geoJsons[name]);
+          if (this.$store.getters.editLayers.includes(el.layerId)) application.map.addLayer(this.geoJsons[name]);
         });
       },
       hideObject: function (ids) {
@@ -75,7 +75,7 @@
     mounted() {
       let that = this;
       this.getLayers();
-      this.$root.$on('selectedLayer', (id, bool) => {
+      this.$root.$on('SELECTED_LAYER', (id, bool) => {
         this.getTrapLinks(id, bool);
       });
 

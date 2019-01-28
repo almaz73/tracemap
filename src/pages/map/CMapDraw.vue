@@ -137,8 +137,6 @@
         // Extract GeoJson from featureGroup
         var data = drawnItems.toGeoJSON();
 
-        console.log("...geoJson=", data)
-
         // Stringify the GeoJson
         var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
 

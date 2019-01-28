@@ -1,17 +1,25 @@
 <template>
-  <div @mouseleave="mouseLeave">
+  <div @mouseleave="mouseLeave" @keyup.esc="clearFilter">
     <BrigadesPanel :menu="menu" @openPanel="openPanel"/>
     <BrigadesHistory :historyPanelParams="historyPanelParams" @nextPanel="nextPanel()"/>
     <BrigadesInfo :infoPanelParams="infoPanelParams" @nextPanel="nextPanel()"/>
 
     <div class="main-root">
       <input class="input-search" v-model="searchWord"
+             ref="inputSearch"
+             @keyup.enter="onEnter"
              @input="filter()"
-             placeholder="... "
+             placeholder=" поиск бригады ..."
              title="поиск"
       >
-      <div class="comment-search" v-if="searchWord">найдено: {{selectedBrigade.length}}</div>
-      <div class="clear-search" @click="clearFilter()">x</div>
+      <div class="comment-search" v-if="searchWord">
+        <span class="b-enter" v-if="selectedBrigade.length===1"
+              @click="onEnter"
+              title="Enter">↵</span>
+        найдено: {{selectedBrigade.length}}
+        <div class="close close-brigade" @click="clearFilter" title="Esc">✖</div>
+      </div>
+      <div class="close" @click="$store.dispatch('setTools', {tool: null, val: null})">✖</div>
       <div class="root">
         <label v-for="(el, k) in layers" :key="k" class="cbox">
       <span class="text" :class="{full: isFull(el), mark: true}" @click.stop="twoFunction(el)" :title="el.stationName">
@@ -36,44 +44,43 @@
 
               <!-- автомобили3 -->
               <label v-if="check('~L'+el3.id)" class="cbox auto" v-for="item3 in el3.data" :key="item3.automobileId"
-                     :class="{'changed-brigade':textSelectedBrigade.includes(item3.name)}"
+                     :class="{'changed-brigade':textSelectedBrigade.includes(item3.ordersId)}"
+                     @mousedown="mousedown" @click.stop="openSetPanel(item3)"
               >
                 <div class="div-checkbox" :class="{'checked':check(item3.automobileId)}">
                   <div class="like"/>
                 </div>
                 <span class="text">{{item3.name}}</span>
-                <img @mousedown="mousedown" @click.stop="openSetPanel(item3)" class="set"
-                     src="../../assets/images/set.png"/>
+                <img class="set" src="../../assets/images/set.png"/>
               </label>
               <!-- end автомобили3 -->
             </label>
 
             <!-- автомобили2 -->
             <label v-if="check('~L'+el2.id)" class="cbox auto" v-for="item2 in el2.data" :key="item2.automobileId"
-                   :class="{'changed-brigade': textSelectedBrigade.includes(item2.name)}"
+                   :class="{'changed-brigade': textSelectedBrigade.includes(item2.ordersId)}"
+                   @mousedown="mousedown" @click.stop="openSetPanel(item2)"
             >
               <div class="div-checkbox" :class="{'checked':check(item2.automobileId)}">
                 <div class="like"/>
               </div>
               <span class="text">{{item2.name}}</span>
-              <img @mousedown="mousedown" @click.stop="openSetPanel(item2)" class="set"
-                   src="../../assets/images/set.png"/>
+              <img class="set" src="../../assets/images/set.png"/>
             </label>
             <!-- end автомобили2 -->
           </label>
 
           <!-- автомобили -->
           <label v-for="item in el.data" class="cbox auto" v-if="check('~L'+el.id)" :key="item.automobileId"
-                 :class="{'changed-brigade':textSelectedBrigade.includes(item.name)}"
+                 :class="{'changed-brigade':textSelectedBrigade.includes(item.ordersId)}"
+                 @mousedown="mousedown" @click.stop="openSetPanel(item)"
           >
             <div class="div-checkbox" :class="{'checked':check(item.automobileId)}">
               <div class="like"/>
             </div>
             <span class="text">{{item.name}}</span>
-            <img @mousedown="mousedown" @click.stop="openSetPanel(item)" class="set"
-                 src="../../assets/images/set.png"/>
+            <img class="set" src="../../assets/images/set.png"/>
           </label>
-
 
           <!-- end автомобили -->
         </label>
@@ -84,8 +91,8 @@
 
 <script>
   import BrigadesPanel from "../combobox/BrigadesPanel";
-  import BrigadesHistory from '../combobox/BrigadesHistory'
-  import BrigadesInfo from '../combobox/BrigadesInfo'
+  import BrigadesHistory from '../BrigadesHistory'
+  import BrigadesInfo from '../BrigadesInfo'
   import application from '../../assets/js/application';
 
   export default {
@@ -127,6 +134,7 @@
         return this.$store.state.brigades.indexOf(val) > -1;
       },
       twoFunction(el) {
+        this.menu.show = false;
         this.showStationList(el.id);
         this.showAutoList(el.id);
       },
@@ -151,7 +159,7 @@
         this.menu.show = false;
         this.historyPanelParams.show = false;
         this.infoPanelParams.show = false;
-        this.menu.x = $event.clientX - $event.offsetX + 30;
+        this.menu.x = 360;
         this.menu.y = $event.clientY - $event.offsetY;
         this.menu.show = true;
       },
@@ -178,7 +186,7 @@
         let parentId = el.id;
         if (parentParentId) this.parentParentId = parentParentId;
         el.data && el.data.forEach(brigade => {
-          if (brigade.name.toUpperCase().includes(this.searchWord.toUpperCase())) {
+          if (brigade.name.toUpperCase().replace(/\s+/g, '').includes(this.searchWord.toUpperCase().replace(/\s+/g, ''))) {
             brigade.parentId = parentId;
             brigade.parentParentId = this.parentParentId;
             this.selectedBrigade.push(brigade);
@@ -218,7 +226,26 @@
       clearFilter() {
         this.searchWord = '';
         this.filter();
-      }
+      },
+      /**
+       * Нажатие enter покажет выбранный маршурт, включит тултип бригады
+       */
+      onEnter() {
+        if (!this.selectedBrigade.length) {
+          this.$store.dispatch('setNotification', 'Такая бригада не надена');
+          return;
+        }
+        let coord = [this.selectedBrigade[0].latitude, this.selectedBrigade[0].longitude];
+        application.map.setView(coord, 13);
+
+        this.$store.dispatch('clearTools'); // скрыть панель
+        this.$root.$emit('MANAGER_LAYERS', {brigadesOrdersIds: [this.selectedBrigade[0].ordersId], noClean: true});
+        this.$root.$emit('SHOW_MARKERS', false, this.selectedBrigade[0].ordersId)
+      },
+
+    },
+    mounted() {
+      this.$refs.inputSearch.focus();
     }
   }
 </script>
@@ -356,31 +383,51 @@
 
   .input-search {
     margin: 10px;
-    width: 90%;
+    margin-top: 30px;
+    margin-left: 20px;
+    width: 325px;
     outline: none;
+    border-bottom: 1px solid #ccc;
   }
 
-  .clear-search {
-    width: 40px;
+  .close {
     position: absolute;
-    right: 0px;
-    top: 0px;
+    line-height: 10px;
+    border-radius: 4px;
+    right: 6px;
+    top: 6px;
     text-align: center;
-    font-size: 20px;
-    padding: 5px;
-    opacity: 0;
+    padding: 4px;
     cursor: pointer;
   }
 
-  .clear-search:hover {
-    opacity: 1;
+  .close-brigade {
+    top: 0;
+    right: -17px;
+  }
+
+  .close:hover {
+    border: 1px solid #ccc;
+    margin: -1px;
   }
 
   .comment-search {
     width: 100px;
     position: absolute;
-    right: 10px;
-    top: 10px;
+    right: 23px;
+    top: 28px;
     color: #aaa;
+  }
+
+  .b-enter {
+    border: 1px solid #999;
+    padding: 0 5px;
+    height: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .b-enter:hover {
+    background: #e5e5e5;
   }
 </style>

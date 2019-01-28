@@ -22,10 +22,15 @@
       <div class="draggableP-head-x" @click="$emit('close')">х</div>
     </div>
     <div class="draggableP-content" v-if="!isShow">
-      <span class="left" style="float: left" @click="showClick()">{{dateStart}}</span>
+      <span class="left" style="float: left" @click="showClick('start')">{{dateStart}}</span>
       <span class="middle" @click="playClick(true)" v-if="!isPlay">&#10073;&#10073;</span>
       <span class="middle" @click="playClick(false)" v-else>&#9654;</span>
-      <span class="right" style="float: right">{{dateEnd}}</span>
+      <span class="right" style="float: right" @click="showClick('end')">{{dateEnd}}</span>
+    </div>
+    <div>
+      <span class="line" :style="{'border-color': type.color}" v-for="(type,i) in colorGroup" :key="i" title="км/час">
+        <a :style="{'border-color': type.color}">{{Math.round(type.value)}}</a>
+      </span>
     </div>
   </div>
 </template>
@@ -51,6 +56,7 @@
         speedPanel: false,
         dateStart: '',
         dateEnd: '',
+        colorGroup: {}
       };
     },
     created() {
@@ -98,7 +104,7 @@
         pleerOfMap.playClick(this.isPlay);
       },
       showClick(val) {
-        pleerOfMap.showClick();
+        pleerOfMap.showClick(val);
       },
       pleerCallBack(val) {
         this.isPlay = val;
@@ -139,6 +145,9 @@
         this.speedPanel = false;
         this.durationChanged();
       },
+      colorInformation(colorGroup) {
+        this.colorGroup = colorGroup;
+      },
       getDateFormat(date) {
         return ('0' + date.getDate()).substr(-2) + '-' +
           ('0' + (date.getMonth() + 1)).substr(-2) + '-' +
@@ -167,11 +176,12 @@
 
       let delta = periodEnd.getTime() - periodStart.getTime();
       this.time = delta / 3600000;
+      pleerOfMap.callBackColor = this.colorInformation;
       pleerOfMap.callBack = this.pleerCallBack; // чтобы после окончания движения кнопку плеера изменить
       pleerOfMap.show(historyData, this.duration);
 
       // отлавливаем нажатие на карту, и находим ближайший узел линии
-      this.$root.$on('onMapClick', function (e) {
+      this.$root.$on('ON_MAP_CLICK', function (e) {
         if (e.latlng) pleerOfMap.findNode(e.latlng.lat, e.latlng.lng)
       });
 
@@ -252,7 +262,7 @@
     cursor: pointer;
   }
 
-  .draggableP-content span.left:hover {
+  .draggableP-content span.left, .draggableP-content span.right {
     cursor: pointer;
   }
 
@@ -299,4 +309,32 @@
   .score-speed-panel span:hover {
     background: #bd5a35;
   }
+
+  .line {
+    width: 30px;
+    border: 2px solid;
+    height: 0px;
+    margin: 5px;
+    display: inline-grid;
+    position: relative;
+    opacity: 0.5;
+    border-radius: 5px;
+  }
+
+  .line a {
+    position: absolute;
+    border: 1px solid;
+    background: white;
+    border-radius: 15px;
+    padding: 2px;
+    color: black;
+    margin: 0 auto;
+    left: -3px;
+    top: -10px;
+    font-size: 10px;
+    font-weight: bold;
+    min-width: 17px;
+    text-align: center;
+  }
+
 </style>

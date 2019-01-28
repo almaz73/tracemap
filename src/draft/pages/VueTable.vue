@@ -217,7 +217,6 @@
       window.DDD = this.data_question;
 
       this.data_question.map(el => {
-        console.log("...... el=", el)
         let node = el[Object.keys(el)];
 
         let days = [];
@@ -232,7 +231,6 @@
           allHours: node.allHoursConc,
           days: days
         };
-        console.log("...... datasOneEmployee=", datasOneEmployee)
         duas.map(dua => {
 
           // if (dua / 2 == parseInt(dua / 2)) {
@@ -244,7 +242,6 @@
           // newDatasOneEmployee.days=
 
           this.tableData.push(datasOneEmployee)
-          console.log("this.tableData=", this.tableData)
         })
 
       })

@@ -43,27 +43,19 @@
     methods: {
       onMapClick(e) {
         // показ координаты
-        this.$root.$emit('onMapClick', e);
+        this.$root.$emit('ON_MAP_CLICK', e);
         console.log('[' + e.latlng.lat + ', ' + e.latlng.lng + '],')
       },
       onMeasure() {
         this.showMeasure = false;
 
         function takePen(that) {
-          if (!that.showMeasure && !!document.querySelector('.leaflet-control-scale-line')) {
-            that.showMeasure = true;
-            that.polylineMeasure._toggleMeasure();
-          } else {
-            setTimeout(() => takePen(that), 100);
-          }
+          that.showMeasure = true;
+          that.polylineMeasure._toggleMeasure();
         }
 
         takePen(this)
       }
-    },
-    beforeDestroy() {
-      let unsubscribe = this.$store.subscribe(this.onMeasure);
-      unsubscribe();
     },
     computed: {
       showButtons() {
@@ -95,10 +87,12 @@
       changeTile() {
         this.tile && application.map.addLayer(this.tile);
         return true;
-      }
+      },
     },
     mounted() {
-      this.$store.subscribe(this.onMeasure);
+      this.$watch('$store.getters.tools', () => {
+        if (this.$store.getters.tools.find(el => el.tool === 'line' && el.val === true)) this.onMeasure();
+      });
 
       delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
@@ -206,8 +200,6 @@
         // Extract GeoJson from featureGroup
         var data = drawnItems.toGeoJSON();
 
-        console.log("...geoJson=", data);
-
         // Stringify the GeoJson
         var convertedData = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data));
 
@@ -273,5 +265,9 @@
 
   .own-popup .leaflet-popup-content-wrapper {
     padding: 0;
+  }
+
+  #polyline-measure-control {
+    display: none
   }
 </style>

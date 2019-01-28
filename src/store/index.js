@@ -73,7 +73,7 @@ const createStore = () => {
         if (exist > -1) state.brigades.splice(exist, 1);
         else state.brigades.push(brigade)
       },
-      removeBrigades(state){
+      removeBrigades(state) {
         state.brigades = [];
       },
       setSelectedBrigade(state, brigades) {
@@ -93,6 +93,9 @@ const createStore = () => {
             return el.tool !== elem.tool;
           })
         }
+      },
+      clearTools(state) {
+        state.tools = [];
       },
       setNotification(state, text) {
         let exist = state.notifications.indexOf(text);
@@ -127,6 +130,9 @@ const createStore = () => {
       },
       setTools(context, elem) {
         context.commit('setTools', elem);
+      },
+      clearTools(context) {
+        context.commit('clearTools');
       },
       async getAlarms(context) {
         const req = await axios.get('/ambulance/dictionaries/actions?codes=48');

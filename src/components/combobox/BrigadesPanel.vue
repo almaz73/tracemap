@@ -1,23 +1,29 @@
 <template>
   <div class="panel" :style="myStyle">
     <div class="menu">
-      <div  @click="openInfo()">
+      <div @click="showLastCoord()">
+        <img src="../../assets/images/combobox/watch.png"/>
+        Показать
+      </div>
+      <div @click="openInfo()">
         <img src="../../assets/images/combobox/pen.png"/>
         Информация
       </div>
-      <div  @click="openHistory()">
+      <div @click="openHistory()">
         <img src="../../assets/images/combobox/createReport.png"/>
         История движения
       </div>
       <!--<div style="pointer-events:none;">-->
-        <!--<img src="../../assets/images/combobox/watch.png"/>-->
-        <!--Режим слежения за ТС-->
+      <!--<img src="../../assets/images/combobox/watch.png"/>-->
+      <!--Режим слежения за ТС-->
       <!--</div>-->
     </div>
 
   </div>
 </template>
 <script>
+  import application from '../../assets/js/application'
+
   export default {
     name: "BrigadesPanel",
     props: {
@@ -33,14 +39,20 @@
       }
     },
     methods: {
-      openHistory () {
+      openHistory() {
         this.$emit('openPanel', 'history');
         this.menu.show = false
       },
-      openInfo () {
+      openInfo() {
         this.$emit('openPanel', 'info');
         this.menu.show = false
-      }
+      },
+      showLastCoord() {
+        this.$store.dispatch('clearTools'); // скрыть панель
+        application.map.setView(this.menu.coord, 13);
+        this.$root.$emit('MANAGER_LAYERS', {brigadesOrdersIds: [this.menu.ordersId], noClean: true});
+        this.$root.$emit('SHOW_MARKERS', false, this.menu.ordersId)
+      },
     }
   }
 </script>

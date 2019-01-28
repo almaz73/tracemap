@@ -138,7 +138,7 @@
     },
     mounted() {
       this.getHistory();
-      this.$root.$on('showCarTraces', this.showCarTrace);
+      this.$root.$on('SHOW_CAR_TRACES', this.showCarTrace);
 
       localforage.getItem('HISTORY_BRIGADES').then(
         his => {

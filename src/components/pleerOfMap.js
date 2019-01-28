@@ -3,20 +3,49 @@
 // связываем с проигрываетелем: запуск/ пауза
 // по нажатию на линию, перетаскиваем маркер, показываем данные для выбранного участка
 
+import L from 'leaflet';
 import '../assets/vendor/Leaflet.MovingMarker/MovingMarker';
 import application from '../assets/js/application';
 
 let me = this;
 let colorSpeed = {
-  "0": "black",
-  "1": "gray",
-  "2": "blue",
-  "3": "green",
-  "4": "orange",
+  // "0": "gray",
+  // "1": "blue",
+  // "2": "green",
+  // "3": "orange",
+  // "4": "violet",
+  // "5": "pink",
+  // "6": "red",
+  // "7": "yellow",
+  // "8": "white",
+
+  "0": "gray",
+  "1": "#0b0465", // "blue",
+  "2": "#064006", // "green",
+  "3": "orange",
+  "4": "violet",
   "5": "pink",
-  "6": "violet",
-  "7": "red",
-  "8": "yellow",
+  "6": "red",
+  "7": "yellow",
+  "8": "white",
+
+  // "0": "#4d0101",
+  // "1": "#8e0e0e",
+  // "2": "#ca2222",
+  // "3": "#e64b4b",
+  // "4": "#f59797",
+  // "5": "#fac4c4",
+  // "6": "#fee5e5",
+  // "7": "yellow",
+
+  // "0": "#040033",
+  // "1": "#0f069a",
+  // "2": "#1d12cf",
+  // "3": "#6158f6",
+  // "4": "#918afb",
+  // "5": "#b8b4fa",
+  // "6": "#dbd9fd",
+  // "7": "yellow",
 };
 
 this.show = function (data, duration) {
@@ -39,6 +68,7 @@ this.show = function (data, duration) {
   });
 
   let distance = 0; // чтобы суммировать весь пройденный путь
+  let colorsObjInfo = {};
 
   // добавим разноцветные линии, создадим массивы интервалов времени, запомним данные
   data.routes && data.routes.map(el => {
@@ -67,12 +97,22 @@ this.show = function (data, duration) {
       timeArr.push(partTime)
     });
 
+    // соберем цветовую группу для плеера
+    let groupColor = colorSpeed[el.properties.speedGroup];
+    if (!colorsObjInfo[groupColor]) colorsObjInfo[groupColor] = el.properties.speed;
+    else if (colorsObjInfo[groupColor] < el.properties.speed) colorsObjInfo[groupColor] = el.properties.speed;
+
     L.polyline(el.coordinates, {
       color: colorSpeed[el.properties.speedGroup],
       opacity: 0.7,
       weight: 7
     }).addTo(me.allElements);
   });
+
+  let colorGroup = [];
+  Object.keys(colorsObjInfo).forEach(type => colorGroup.push({color: type, value: colorsObjInfo[type]}));
+  colorGroup.sort((a, b) => a.value - b.value);
+  me.callBackColor(colorGroup);
 
   // запомним первоначальное состояние для изменения скорости просмотра
   me.rootTimeArr = Object.assign([], timeArr);
@@ -189,7 +229,7 @@ function newPopup(index) {
   let popupContent = 'Скорость: ' + info.speed + ' км/час';
   let distance = parseInt(info.distance * 100) / 100;
 
-  popupContent += '<br>Время: ' + date.getHours() + ':' + date.getMinutes();
+  popupContent += '<br>Время: ' + date.getHours() + ':' + ('0' + date.getMinutes()).substr(-2);
   popupContent += '<br>Путь: ' + distance + ' км';
   me.marker.bindPopup(popupContent)
 }
@@ -201,11 +241,13 @@ this.clear = function () {
   application.map.removeLayer(me.allElements);
 };
 
-// установить авто на начало пути, показать маркер
-this.showClick = function () {
-  newAnimation(me.rootCoordinatesArr, me.rootTimeArr);
-  newPopup(0);
-  me.marker.openPopup();
+// установить авто на начало пути и конец, показать маркер
+this.showClick = function (val) {
+  let coordinatesArr;
+  if (val === 'start') coordinatesArr = me.rootCoordinatesArr.slice(0);
+  else coordinatesArr = me.rootCoordinatesArr.slice(me.rootCoordinatesArr.length - 1);
+
+  this.findNode(coordinatesArr[0][0], coordinatesArr[0][1]);
 };
 
 export default this;
